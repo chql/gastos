@@ -1,0 +1,16 @@
+{
+    "name": "chql/gastos",
+    "description": "Backend para APP de controle de gastos.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "chql",
+            "email": "chql@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "^3.8",
+        "mongodb/mongodb": "^1.1"
+    }
+}
