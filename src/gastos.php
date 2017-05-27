@@ -13,6 +13,9 @@ $app->put('/gastos', function($request, $response) {
         ]);
     }
 
+    $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
+    $dados['owner'] = $user->_id;
+
     $this->db->gastos->insertOne($dados);
 
     return $response->withJson([

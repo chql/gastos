@@ -34,6 +34,13 @@ $app->put('/usuarios', function($request, $response) {
     ]);
 });
 
+$app->get('/usuarios/logout', function($request, $response) {
+    session_destroy();
+    return $response->withJson([
+        'erro' => false
+    ]);
+});
+
 $app->post('/usuarios/login', function($request, $response) {
     $dados = $request->getParsedBody();
     $form = new \Validacao\ValidaUsuario;
