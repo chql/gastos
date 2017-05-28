@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cuga">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <title>CUGA</title>
+
+    <link rel="stylesheet" href="css/estilo.css">
+    <link rel="shortcut icon" href="img/icone_cadastro.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body ng-controller="corpo">
+    <header class="bar-registro">
+        <h1 ng-click="home()">Sistema de Cadastro de Gastos</h1>
+    </header>
+    <div ng-view></div>
+    <footer class="footer">
+        <p align="center" style="padding-top: 50px"><a href="https://github.com/chql/gastos">Código Fonte Disponível no GitHub</a></p>
+    </footer>
+</body>
+</html>

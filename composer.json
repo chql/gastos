@@ -11,7 +11,7 @@
     ],
     "require": {
         "slim/slim": "^3.8",
-        "mongodb/mongodb": "^1.1",
+        "mongodb/mongodb": "^1.0",
         "aura/input": "^1.2"
     },
 	"autoload": {

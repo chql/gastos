@@ -47,7 +47,7 @@ class ValidaGasto extends Form
             'preco',
             'Preço deve ser valor numérico.',
             function($preco) {
-                return is_double($preco);
+                return is_int($preco) OR is_float($preco);
             }
         );
 

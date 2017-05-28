@@ -62,6 +62,7 @@ h3{
     color: #FFF;
     margin-top: 10px;
 }
+
 input{
     width: 100%;
     margin-bottom: 20px;
@@ -107,21 +108,19 @@ select{
 }
 
 @media only screen and (max-width: 1365px) {
- form{
-    width: 100%;
-    margin-left: 0;
-    background: rgb(0,0,0);
-    padding: 10px 10px;
-    box-sizing: border-box;
-    margin-top: 2px;
-    border-radius: 5px;
-    margin-bottom: 2px;
-}
-
-.aside{
-    display: none;
-}
-
+    .form{
+        width: 100%;
+        margin-left: 0;
+        background: rgb(0,0,0);
+        padding: 10px 10px;
+        box-sizing: border-box;
+        margin-top: 2px;
+        border-radius: 5px;
+        margin-bottom: 2px;
+    }
+    .aside{
+        display: none;
+    }
 }
 
 
