@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transação</title>
+</head>
+<body ng-controller="modTransacao">
+<div ng-form="formTrans" class="form">
+    <h2>Alteração de Transação</h2>
+    <hr/>
+    <input hidden ng-model="id">
+    <h3>Descrição:</h3>
+    <input type="text" placeholder="Descrição" ng-model="descricao" ng-required="true">
+
+    <h3><label for="tipo">Tipo:</label></h3>
+    <select id="tipo" ng-model="tipo" ng-required="true">
+        <option value="despesa">Despesa</option>
+        <option value="receita">Receita</option>
+    </select>
+
+    <h3><label for="categoria">Categoria:</label></h3>
+    <input id="categoria" type="text" placeholder="Categoria" ng-model="categoria" ng-required="true">
+
+    <h3><label for="valor">Valor(R$):</label></h3>
+    <input id="valor" onchange="decimal()"
+           type="text" placeholder="R$ 123.45"
+           class="button3" ng-model="valor" ng-required="true">
+
+    <h3><label for="adesao">Adesão:</label></h3>
+    <select id="adesao" ng-model="adesao" ng-required="true" ng-change="repet()">
+        <option value="fixa">Fixo</option>
+        <option value="variavel">Variável</option>
+    </select>
+
+    <h3><label for="repeticao" ng-if="ch_adesao">Repetição:</label></h3>
+    <select ng-if="ch_adesao" id="repeticao" ng-model="repeticao" ng-required="ch_adesao">
+        <option value="d">Diário</option>
+        <option value="s">Semanal</option>
+        <option value="q">Quinzenal</option>
+        <option value="m">Mensal</option>
+        <option value="a">Anual</option>
+    </select>
+
+    <h3><label for="local">Local:</label></h3>
+    <input id="local" type="text"  placeholder="Local" ng-model="local" ng-required="true">
+
+    <input ng-disabled="!formTrans.$valid" type="button" value="Registrar" class="button1" ng-click="valida()">
+    <input type="button" value="Cancelar" class="button2" ng-click="home()">
+    <h4 ng-if="!formTrans.$valid" style="color: #FFFFFF">Verifique os campos obrigatorios</h4>
+</div>
+</body>
+</html>

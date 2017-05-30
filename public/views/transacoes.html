@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transações</title>
+</head>
+<body ng-controller="verTransacoes">
+    <div class="form">
+        <h2>Transações</h2>
+        <table style="color: white" ng-if="existeTran" class="table table-condensed">
+            <tr>
+                <th>Descrição</th>
+                <th>Tipo</th>
+                <th>Categoria</th>
+                <th>Valor</th>
+                <th>Local</th>
+                <th>Adesão</th>
+                <th>Modificar</th>
+                <th>Excluir</th>
+            </tr>
+            <tr ng-repeat="gasto in transacoes">
+                <td>{{gasto.descricao}}</td>
+                <td>{{gasto.tipo}}</td>
+                <td>{{gasto.categoria}}</td>
+                <td>{{gasto.preco}}</td>
+                <td>{{gasto.local}}</td>
+                <td>{{gasto.adesao}}</td>
+                <td ng-click="modTrans(gasto.id)">X</td>
+                <td ng-click="remTrans(gasto.id)">X</td>
+            </tr>
+        </table>
+        <p ng-if="!existeTran">Não existem transações registradas</p>
+    </div>
+</body>
+</html>
