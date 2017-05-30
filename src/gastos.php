@@ -16,10 +16,37 @@ $app->put('/gastos', function($request, $response) {
     $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
     $dados['owner'] = $user->_id;
 
-    $this->db->gastos->insertOne($dados);
+	if(isset($dados['id'])) {
+		$id = $dados['id'];
+		unset($dados['id']);
+		$this->db->gastos->updateOne(['_id' => $id],[
+			'$set' => $dados
+		]);
+	}
+	else {
+		$this->db->gastos->insertOne($dados);
+	}
 
     return $response->withJson([
         'erro' => false
     ]);
+});
+
+$app->get('/gastos', function($request, $response) {
+	$id = $request->getQueryParam('id');
+	$gastos = [];
+	if(is_null($id))
+		$gastos = $this->db->gastos->find(['owner' => $_SESSION['user']]);
+	else
+		$gastos[] = $this->db->gastos->findOne(['_id' => $id]);
+	return $response->withJson([
+		'erro' => false,
+		'gastos' => $gastos
+	]);
+});
+
+$app->delete('/gastos', function($request, $response) {
+	$id = $request->getQueryParam('id');
+	$gasto = $this->db->gastos->findOne(['_id' => $id]);
 });
 
