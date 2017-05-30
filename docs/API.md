@@ -83,3 +83,107 @@ Cadastra novos gastos do usuário.
         }
     }
 
+Obtém os gastos
+
+### Solicitação
+
+    GET /gastos
+    Content-Type: application/json;charset=utf-8
+
+
+### Resposta
+
+    200 OK
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "erro": <true|false>,
+        "erros": {
+            "<campo>": <array|undefined>
+        },
+        "gastos": [
+            {},{}
+        ]
+    }
+    
+
+Obtém um gasto
+
+### Solicitação
+
+    GET /gastos?id=string
+    Content-Type: application/json;charset=utf-8
+
+
+### Resposta
+
+    200 OK
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "erro": <true|false>,
+        "erros": {
+            "<campo>": <array|undefined>
+        },
+        "gasto": {
+            "id": <string>,
+            "descricao": <string>,
+            "tipo": "<receita|despesa>",
+            "categoria": <string>,
+            "preco": <double>,
+            "local": <string>,
+            "adesao": "<variavel|mensal|fixa>"
+        }
+    }
+
+Atualiza um gasto do usuário
+
+### Solicitação
+
+    POST /gastos
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "id": <string>,
+        "descricao": <string>,
+        "tipo": "<receita|despesa>",
+        "categoria": <string>,
+        "preco": <double>,
+        "local": <string>,
+        "adesao": "<variavel|mensal|fixa>"
+    }
+
+### Resposta
+
+    200 OK
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "erro": <true|false>,
+        "erros": {
+            "<campo>": <array|undefined>
+        }
+    }
+    
+Remove um gasto do usuário
+
+### Solicitação
+
+    DELETE /gastos
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "id": <string>
+    }
+
+### Resposta
+
+    200 OK
+    Content-Type: application/json;charset=utf-8
+
+    {
+        "erro": <true|false>,
+        "erros": {
+            "<campo>": <array|undefined>
+        }
+    }
