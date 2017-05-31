@@ -1,5 +1,5 @@
-const SERVER = "http://localhost:8080/";
-
+const SERVER = "http://localhost:8000/api/";
+var LOGADO = false;
 var app = angular.module('cuga', ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
@@ -18,10 +18,20 @@ app.config(function ($routeProvider) {
         .when("/transacao/:id", {
             templateUrl: "../views/transacao.html",
             controller: 'modTransacao'
+        })
+        .when("/usuario",{
+            templateUrl: "../views/usuarios.html",
+            controller: 'usuarios'
+        })
+        .when("/login", {
+            templateUrl: "../views/login.html",
+            controller: 'usuarios'
         });
 });
 
 app.controller('corpo', function($scope, $route, $routeParams, $location) {
+    if(!LOGADO)
+        $location.path("/login");
     $scope.newTrans = function (){
         $location.path("/nova");
     };
@@ -34,6 +44,9 @@ app.controller('corpo', function($scope, $route, $routeParams, $location) {
 });
 
 app.controller('novaTransacao', function($scope, $route, $routeParams, $location, $http) {
+    $scope.ch_adesao = false;
+    if(!LOGADO)
+        $location.path("/login");
     $scope.$watch('adesao', function() {
         $scope.ch_adesao = $scope.adesao === 'fixa';
     });
@@ -44,9 +57,10 @@ app.controller('novaTransacao', function($scope, $route, $routeParams, $location
             "categoria": $scope.categoria,
             "preco": parseFloat($scope.valor),
             "local": $scope.local,
-            "adesao": $scope.adesao
+            "adesao": $scope.adesao,
+            "repeticao": $scope.repeticao
         };
-        //console.log(form);
+        console.log(form);
         $http.put(SERVER + 'gastos', form).then(
             function (result) {
                 if(result.data['erro']){
@@ -71,92 +85,64 @@ app.controller('novaTransacao', function($scope, $route, $routeParams, $location
 });
 
 app.controller('verTransacoes', function ($scope, $route, $http, $location) {
+    if(!LOGADO)
+        $location.path("/login");
     $http.get(SERVER + 'gastos').then(
         function (result) {
             if(!result.data['erro']){
                 $scope.existeTran = true;
-                $scope.transacoes = result.data['gastos'];
+                $scope.transacoes = result.data['gasto'];
+                console.log($scope.transacoes);
             }
         },
         function (result) {
-            $scope.existeTran = true;
-            $scope.transacoes = [
-                {
-                    "id": "1",
-                    "descricao": "asd",
-                    "tipo": "asd",
-                    "categoria": "asd",
-                    "preco": 2.58,
-                    "local": "asdasd",
-                    "adesao": "fixa"
-                },
-                {
-                    "id": "2",
-                    "descricao": "asd",
-                    "tipo": "asd",
-                    "categoria": "asd",
-                    "preco": 2.84,
-                    "local": "asdasd",
-                    "adesao": "fixa"
-                },
-                {
-                    "id": "3",
-                    "descricao": "asd",
-                    "tipo": "asd",
-                    "categoria": "asd",
-                    "preco": 885,
-                    "local": "asdasd",
-                    "adesao": "mensal"
-                },
-                {
-                    "id": "4",
-                    "descricao": "asd",
-                    "tipo": "asd",
-                    "categoria": "asd",
-                    "preco": 88512,
-                    "local": "asdasd",
-                    "adesao": "fixa"
-                }
-            ]
+            $scope.existeTran = false;
+            alert("Não foi possível consultar as transações");
         }
     );
     $scope.modTrans = function (id) {
         $location.path("transacao/" + id);
     };
     $scope.remTrans = function (id) {
-        $http.delete(SERVER + 'gastos', id).then(
+        $http.delete(SERVER + 'gastos/' + id).then(
             function (result) {
                 if(result.data['erro'])
                     alert("Não foi possível remover a transação");
-                else
+                else {
                     alert("Transação removida com sucesso!");
+                    $route.reload();
+                }
             }
         );
     }
 });
 
 app.controller('modTransacao', function ($scope, $http, $route, $routeParams, $location) {
+    if(!LOGADO)
+        $location.path("/login");
     var id = $routeParams.id;
-    $http.get(SERVER + 'gastos', id).then(
+    $http.get(SERVER + 'gastos/' + id).then(
         function (result) {
             if(!result.data['erro']){
-                $scope.ch_adesao = false;
                 $scope.existeTran = true;
-                $scope.transacao = result.data['gasto'];
+                $scope.id = result.data['gasto']['id'];
+                $scope.descricao = result.data['gasto']['descricao'];
+                $scope.categoria = result.data['gasto']['categoria'];
+                $scope.valor = result.data['gasto']['preco'];
+                $scope.tipo = result.data['gasto']['tipo'];
+                $scope.local = result.data['gasto']['local'];
+                $scope.adesao = result.data['gasto']['adesao'];
+                $scope.repeticao = result.data['gasto']['repeticao'];
+                $scope.ch_adesao = result.data['gasto']['adesao'] === 'fixa';
             }
         },
         function (result) {
-            $scope.existeTran = true;
             $scope.ch_adesao = false;
-            $scope.id = "1";
-            $scope.descricao = "asd";
-            $scope.tipo = "receita";
-            $scope.categoria = "asd";
-            $scope.valor = 2.58;
-            $scope.local = "asdasd";
-            $scope.adesao = "variavel";
+            $scope.existeTran = false;
+            alert("Houve um erro no processamento da requisição")
         }
     );
+    decimal();
     $scope.$watch('adesao', function() {
         $scope.ch_adesao = $scope.adesao === 'fixa';
     });
@@ -168,7 +154,8 @@ app.controller('modTransacao', function ($scope, $http, $route, $routeParams, $l
             "categoria": $scope.categoria,
             "preco": parseFloat($scope.valor),
             "local": $scope.local,
-            "adesao": $scope.adesao
+            "adesao": $scope.adesao,
+            "repeticao": $scope.repeticao
         };
         //console.log(form);
         $http.put(SERVER + 'gastos', form).then(
@@ -191,6 +178,54 @@ app.controller('modTransacao', function ($scope, $http, $route, $routeParams, $l
                 //console.log(result.data);
             }
         );
+    }
+});
+
+app.controller('usuarios', function ($http, $scope, $route, $location) {
+    $scope.cadUser = function () {
+        var user = {
+            "login": $scope.username,
+            "senha": $scope.senha
+        };
+        $http.put(SERVER + "usuarios", user).then(
+            function (result) {
+                if(result.data['erro']){
+                    alert("Não foi possível cadastrar o usuário");
+                    $location.reload();
+                }
+                else{
+                    alert("Usuário cadastrado com sucesso");
+                    $location.path('/login');
+                }
+            },
+            function () {
+                alert("Não foi possível cadastrar o usuário");
+                $location.reload();
+            }
+        )
+
+    };
+    $scope.login = function () {
+        var user = {
+            "login": $scope.username,
+            "senha": $scope.senha
+        };
+        $http.post(SERVER + "usuarios/login", user).then(
+            function (result) {
+                if (result.data['erro']){
+                    alert("Não foi possível fazer o login");
+                    $location.reload();
+                }
+                else{
+                    LOGADO = true;
+                    $location.path('/');
+                }
+            },
+            function () {
+                alert("Não foi possível fazer o login");
+                $location.reload();
+            }
+        )
     }
 });
 

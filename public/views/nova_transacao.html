@@ -31,12 +31,12 @@
         </select>
 
         <h3><label for="repeticao" ng-if="ch_adesao">Repetição:</label></h3>
-        <select ng-if="ch_adesao" id="repeticao" ng-model="repeticao" ng-required="ch_adesao">
-            <option value="d">Diário</option>
-            <option value="s">Semanal</option>
-            <option value="q">Quinzenal</option>
-            <option value="m">Mensal</option>
-            <option value="a">Anual</option>
+        <select ng-hide="!ch_adesao" id="repeticao" ng-model="repeticao" ng-required="ch_adesao">
+            <option value="dia">Diário</option>
+            <option value="semana">Semanal</option>
+            <option value="quinzena">Quinzenal</option>
+            <option value="mes">Mensal</option>
+            <option value="ano">Anual</option>
         </select>
 
         <h3><label for="local">Local:</label></h3>
