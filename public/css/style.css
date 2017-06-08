@@ -1,0 +1,28 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    min-height: 100%;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.carousel-slider {
+    margin: auto;
+    flex: auto;
+}
+
+header, footer {
+    flex: none;
+}
+
+a {
+    cursor: pointer;
+    cursor: hand;
+}

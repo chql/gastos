@@ -2,17 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Cadastro de Usuario</title>
 </head>
 <body ng-controller="usuarios">
     <div ng-form="formUser" class="container">
         <div class="row">
             <div class="col s12">
-                <h4 class="center">Entre:</h4>
+                <h4 class="center">Cadastro de Usuário</h4>
             </div>
         </div>
         <div class="row">
             <div class="col s12">
+                <div class="input-field col s6">
+                    <label for="name">Nome Completo:</label>
+                    <input id="name" type="text" ng-required="true" ng-model="name" class="validate">
+                </div>
                 <div class="input-field col s6">
                     <label for="username">Usuário:</label>
                     <input id="username" type="text" ng-required="true" ng-model="username" class="validate">
@@ -21,24 +25,16 @@
                     <label for="pass">Senha:</label>
                     <input id="pass" type="password" ng-required="true" ng-model="senha" class="validate">
                 </div>
-                <button class="teal darken-4 btn waves-effect waves-light" type="submit" name="action" ng-click="login()"
-                        ng-disabled="!formUser.$valid">Entrar
+                <div class="input-field col s6">
+                    <label for="pass2">Confirme a senha:</label>
+                    <input id="pass2" type="password" ng-required="true" ng-model="senha2" class="validate">
+                </div>
+                <button class="teal darken-4 btn waves-effect waves-light" type="submit" name="action" ng-click="cadUser()"
+                        ng-disabled="!formUser.$valid">Enviar
                     <i class="material-icons right">send</i>
                 </button>
             </div>
         </div>
-        <div class="row">
-            <div class="col s12">
-                <h4 class="center">Ou caso ainda não tenha uma conta, crie agora!</h4>
-                <p class="center">
-                    <button class="teal darken-4 btn waves-effect waves-light" type="button" ng-click="cadastro()">
-                        Criar Conta
-                        <i class="material-icons right">assignment_ind</i>
-                    </button>
-                </p>
-            </div>
-        </div>
-
     </div>
 </body>
 </html>

@@ -1,0 +1,22 @@
+
+    |
+    ` CU #1: Cadastro de Usuário
+    | |
+    | ` Usuário informa nome, username e senha - CRUD(completo).
+    |
+    ` CU #2: Cadastro de Despesa:
+    | |
+    | ` Usuário informa a origem(Referese ao estabelecimento)*, local(Refere-se a cidade)*, tipo(Fixa ou variavel -- se fixa[diária, semanal, quinzenal, mensal, anual]), data. CRUD(Completo)
+    |   |
+    |   ` CU #2.1: Cadastrode Itens de Despesa:
+    |     |
+    |     ` Usuário informa descrição do item, valor unitário, quantidade. - CRUD(Completo)
+    |
+    ` CU #3: Cadastro de Receita:
+    | |
+    | ` Usuário informa proveniencia da receita, valor, data e tipo(Fixa ou variavel -- se fixa[diária, semanal, quinzenal, mensal, anual]). CRUD(Completo)
+
+    * Devem conter auto-complete
+    PS: ID deve ser gerado pela aplicação
+    PS: Permitir login com o usuário criado
+ 

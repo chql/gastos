@@ -5,7 +5,7 @@ app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
             templateUrl: "../views/main.html",
-            controller: 'corpo'
+            controller: 'main'
         })
         .when("/nova",{
             templateUrl: "../views/nova_transacao.html",
@@ -20,13 +20,78 @@ app.config(function ($routeProvider) {
             controller: 'modTransacao'
         })
         .when("/usuario",{
-            templateUrl: "../views/usuarios.html",
+            templateUrl: "../views/cadastroUsuario.html",
             controller: 'usuarios'
         })
         .when("/login", {
             templateUrl: "../views/login.html",
             controller: 'usuarios'
+        })
+        .when("/home", {
+            templateUrl: "../views/home.html",
+            controller: 'home'
+        })
+        .when("/novaReceita", {
+            templateUrl: "../views/receitas/novaReceita.html",
+            controller: 'home'
+        })
+        .when("/novaDespesa", {
+            templateUrl: "../views/despesas/novaDespesa.html",
+            controller: 'home'
+        })
+        .when("/verReceitas", {
+            templateUrl: "../views/receitas/verReceitas.html",
+            controller: 'home'
+        })
+        .when("/verDespesas", {
+            templateUrl: "../views/despesas/verDespesas.html",
+            controller: 'home'
         });
+});
+
+app.controller('home', function ($scope, $route, $location) {
+    $scope.pessoa = "Fulano";
+    $scope.logado = true;
+    $scope.verDespesas = function () {
+        $location.path("/verDespesas")
+    };
+    $scope.verReceitas = function () {
+        $location.path("/verReceitas")
+    };
+    $scope.novaDespesa = function () {
+        $location.path("/novaDespesa")
+    };
+    $scope.novaReceita = function () {
+        $location.path("/novaReceita")
+    };
+    $(document).ready(function() {
+        $('select').material_select();
+    });
+    $('.datepicker').pickadate({
+        selectMonths: true, // Creates a dropdown to control month
+        selectYears: 15, // Creates a dropdown of 15 years to control year
+        format: 'dd-mm-yyyy'
+    });
+
+});
+
+app.controller('receitas', function ($scope, $route, $location) {
+
+});
+
+app.controller('main', function ($scope, $route, $location) {
+    if (LOGADO === false)
+        $scope.logado = false;
+    $scope.home = function (){
+        $location.path("/");
+    };
+    $scope.login = function (){
+        $location.path("/login");
+    };
+    $scope.cadastro = function (){
+        $location.path("/usuario");
+    };
+    $('.carousel.carousel-slider').carousel({fullWidth: true});
 });
 
 app.controller('corpo', function($scope, $route, $routeParams, $location) {
@@ -34,9 +99,6 @@ app.controller('corpo', function($scope, $route, $routeParams, $location) {
         $location.path("/login");
     $scope.newTrans = function (){
         $location.path("/nova");
-    };
-    $scope.home = function (){
-        $location.path("/");
     };
     $scope.showTrans = function () {
         $location.path("/transacoes")
@@ -218,7 +280,7 @@ app.controller('usuarios', function ($http, $scope, $route, $location) {
                 }
                 else{
                     LOGADO = true;
-                    $location.path('/');
+                    $location.path('/home');
                 }
             },
             function () {
@@ -231,5 +293,10 @@ app.controller('usuarios', function ($http, $scope, $route, $location) {
 
 var decimal = function () {
     var v = document.getElementById('valor');
-    v.value = parseFloat(v.value).toFixed(2);
+    var x = parseFloat(v.value);
+    if(isNaN(x))
+        v.value = "";
+    else
+        v.value = x.toFixed(2);
 };
+
