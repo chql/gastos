@@ -7,18 +7,6 @@ app.config(function ($routeProvider) {
             templateUrl: "../views/main.html",
             controller: 'main'
         })
-        .when("/nova",{
-            templateUrl: "../views/nova_transacao.html",
-            controller: 'novaTransacao'
-        })
-        .when("/transacoes",{
-            templateUrl: "../views/transacoes.html",
-            controller: 'verTransacoes'
-        })
-        .when("/transacao/:id", {
-            templateUrl: "../views/transacao.html",
-            controller: 'modTransacao'
-        })
         .when("/usuario",{
             templateUrl: "../views/cadastroUsuario.html",
             controller: 'usuarios'
@@ -33,25 +21,32 @@ app.config(function ($routeProvider) {
         })
         .when("/novaReceita", {
             templateUrl: "../views/receitas/novaReceita.html",
-            controller: 'home'
+            controller: 'cadReceitas'
         })
         .when("/novaDespesa", {
             templateUrl: "../views/despesas/novaDespesa.html",
-            controller: 'home'
+            controller: 'cadDespesas'
         })
         .when("/verReceitas", {
             templateUrl: "../views/receitas/verReceitas.html",
-            controller: 'home'
+            controller: 'verReceitas'
         })
         .when("/verDespesas", {
             templateUrl: "../views/despesas/verDespesas.html",
-            controller: 'home'
+            controller: 'verDespesas'
+        })
+        .when("/verReceitas/:id/", {
+            templateUrl: "../views/receitas/verReceita.html",
+            controller: 'upReceita'
+        })
+        .when("/verDespesas/:id/", {
+            templateUrl: "../views/despesas/verDespesa.html",
+            controller: 'upDespesa'
         });
 });
 
 app.controller('home', function ($scope, $route, $location) {
     $scope.pessoa = "Fulano";
-    $scope.logado = true;
     $scope.verDespesas = function () {
         $location.path("/verDespesas")
     };
@@ -64,24 +59,275 @@ app.controller('home', function ($scope, $route, $location) {
     $scope.novaReceita = function () {
         $location.path("/novaReceita")
     };
-    $(document).ready(function() {
-        $('select').material_select();
-    });
-    $('.datepicker').pickadate({
-        selectMonths: true, // Creates a dropdown to control month
-        selectYears: 15, // Creates a dropdown of 15 years to control year
-        format: 'dd-mm-yyyy'
-    });
-
 });
 
-app.controller('receitas', function ($scope, $route, $location) {
+app.controller('upReceita', function ($scope, $location, $http, $routeParams) {
+    var dados = [
+        {id: "123", origem: "asd123", valor: 245.45, data: "2017-06-30", repeticao: "dia"},
+        {id: "456", origem: "asd456", valor: 246.45, data: "2017-06-30", repeticao: "dia"},
+        {id: "789", origem: "asd789", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
+        {id: "000", origem: "asd000", valor: 246.45, data: "2017-06-10", repeticao: "dia"}
+    ];
+    // TODO: RECEBER DADOS DA API
+    for(var i = 0; i<dados.length; i++){
+        if(dados[i]['id'] === $routeParams.id){
+            console.log(dados[i]);
+            $scope.origem = dados[i].origem;
+            $scope.valor = dados[i].valor;
+            var d = new Date(dados[i].data);
+            d.setMinutes(d.getTimezoneOffset());
+            $scope.data = d;
+            $scope.repeticao = "dia";
+        }
+    }
+    $scope.upReceita = function () {
+        var form = {
+            id: $routeParams.id,
+            origem: $scope.origem,
+            repeticao: $scope.repeticao,
+            valor: $scope.valor,
+            data: $scope.data.toISOString().substring(0,10)
+        };
+        console.log(form);
+        // TODO: ENVIAR PARA A API
+    }
+});
 
+app.controller('verReceitas', function ($scope, $route, $http, $location) {
+    $scope.dados = [
+        {id: "123", origem: "asd123", valor: 245.45, data: "2017-06-10", repeticao: "dia"},
+        {id: "456", origem: "asd456", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
+        {id: "789", origem: "asd789", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
+        {id: "000", origem: "asd000", valor: 246.45, data: "2017-06-10", repeticao: "dia"}
+    ]; //TODO: RECEBER RECEITAS DA API
+    $scope.remove = function (id) {
+        console.log("Remove o " + id);
+        var ans = confirm("Tem certeza que deseja excluir este registro?");
+        if(ans){
+            for(var i = 0; i<$scope.dados.length; i++){
+                if($scope.dados[i]['id'] === id){
+                    $scope.dados.splice(i, 1);
+                }
+            }
+        }// TODO: REMOVER COM A API
+    };
+    $scope.edit = function (id) {
+        console.log("Edita o " + id);
+        $location.path("/verReceitas/" + id);
+    }
+});
+
+app.controller('cadReceitas', function ($scope, $route, $location, $http) {
+    $scope.cadReceita = function () {
+        var dados = {
+            origem: $scope.origem,
+            repeticao: $scope.repeticao,
+            valor: $scope.valor,
+            data: $scope.data.toISOString().substring(0,10)
+        };
+        console.log(dados);
+        //TODO: CONFERIR ENDPOINT
+        $http.post(SERVER + "receitas", dados).then(
+            function (result) {
+                if (result.data['erro']) {
+                    alert("Não foi possível realizar a operacão");
+                }
+                else{
+                    alert("Receita armazenada com sucesso");
+                    $location.path("/home");
+                }
+            },
+            function () {
+                alert("Não foi possível realizar a operação");
+            }
+        )
+    };
+});
+
+app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $http) {
+    var dados = [
+        {
+            id: 1,
+            origem: "Sao Luiz",
+            local: "Crato",
+            repeticao: "dia",
+            data: "2017-06-10",
+            itens: [
+                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
+                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
+            ],
+            total: "8.99"
+        },
+        {
+            id: 2,
+            origem: "Sao Luiz",
+            local: "Crato",
+            repeticao: "mes",
+            data: "2017-06-18",
+            itens: [
+                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
+                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
+            ],
+            total: "8.99"
+        }
+    ];
+    for(var i = 0; i<dados.length; i++){
+        if(dados[i]['id'] == $routeParams.id){
+            console.log(dados[i]);
+            $scope.origem = dados[i].origem;
+            $scope.local = dados[i].local;
+            $scope.total = dados[i].total;
+            var d = new Date(dados[i].data);
+            d.setMinutes(d.getTimezoneOffset());
+            $scope.data = d;
+            $scope.repeticao = dados[i].repeticao;
+            $scope.itens =  dados[i].itens;
+        }
+    }
+
+    $scope.newItem = function () {
+        $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
+    };
+    $scope.remItem = function () {
+        if($scope.itens.length > 1)
+            $scope.itens.splice($scope.itens.length - 1);
+        else
+            alert("Deve haver pelo menos um item");
+    };
+    $scope.ftotal = function () {
+        var c = 0;
+        $scope.itens.forEach(function (v) {
+            c += parseFloat(v.valort);
+        });
+        $scope.total = c.toFixed(2);
+    };
+    $scope.upDespesa = function () {
+        var form = {
+            origem: $scope.origem,
+            local: $scope.local,
+            repeticao: $scope.repeticao,
+            data: $scope.data.toISOString().substring(0,10),
+            itens: $scope.itens,
+            total: $scope.total
+        };
+        console.log(form);
+        //TODO: CONFERIR ENDPOINT
+        $http.post(SERVER + "despesas", form).then(
+            function (result) {
+                if (result.data['erro']) {
+                    alert("Não foi possível realizar a operacão");
+                }
+                else{
+                    alert("Despesa armazenada com sucesso");
+                    $location.path("/home");
+                }
+            },
+            function () {
+                alert("Não foi possível realizar a operação");
+            }
+        )
+    };
+    
+});
+
+app.controller('verDespesas', function ($scope, $route, $location, $http) {
+    $(document).ready(function(){
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+    });
+    $scope.dados = [
+        {
+            id: 1,
+            origem: "Sao Luiz",
+            local: "Crato",
+            repeticao: "dia",
+            data: "2017-06-10",
+            itens: [
+                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
+                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
+                ],
+            total: "8.99"
+        },
+        {
+            id: 2,
+            origem: "Sao Luiz",
+            local: "Crato",
+            repeticao: "mes",
+            data: "2017-06-18",
+            itens: [
+                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
+                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
+            ],
+            total: "8.99"
+        }
+    ];
+    $scope.remove = function (id) {
+        console.log("Remove o " + id);
+        var ans = confirm("Tem certeza que deseja excluir este registro?");
+        if(ans){
+            for(var i = 0; i<$scope.dados.length; i++){
+                if($scope.dados[i]['id'] === id){
+                    $scope.dados.splice(i, 1);
+                }
+            }
+        }// TODO: REMOVER COM A API
+    };
+    $scope.edit = function (id) {
+        console.log("Edita o " + id);
+        $location.path("/verDespesas/" + id);
+    }
+});
+
+app.controller('cadDespesas', function ($scope, $route, $location, $http) {
+    $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: 0, valort: ""}];
+    $scope.total = 0.0;
+    $scope.newItem = function () {
+        $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
+    };
+    $scope.remItem = function () {
+        if($scope.itens.length > 1)
+            $scope.itens.splice($scope.itens.length - 1);
+        else
+            alert("Deve haver pelo menos um item");
+    };
+    $scope.ftotal = function () {
+        var c = 0;
+        $scope.itens.forEach(function (v) {
+            c += parseFloat(v.valort);
+        });
+        $scope.total = c.toFixed(2);
+    };
+    $scope.cadDespesa = function () {
+        var form = {
+            origem: $scope.origem,
+            local: $scope.local,
+            repeticao: $scope.repeticao,
+            data: $scope.data.toISOString().substring(0,10),
+            itens: $scope.itens,
+            total: $scope.total
+        };
+        console.log(form);
+        //TODO: CONFERIR ENDPOINT
+        $http.post(SERVER + "despesas", form).then(
+            function (result) {
+                if (result.data['erro']) {
+                    alert("Não foi possível realizar a operacão");
+                }
+                else{
+                    alert("Despesa armazenada com sucesso");
+                    $location.path("/home");
+                }
+            },
+            function () {
+                alert("Não foi possível realizar a operação");
+            }
+        )
+    };
 });
 
 app.controller('main', function ($scope, $route, $location) {
     if (LOGADO === false)
-        $scope.logado = false;
+        $scope.logado = true;
     $scope.home = function (){
         $location.path("/");
     };
@@ -92,155 +338,10 @@ app.controller('main', function ($scope, $route, $location) {
         $location.path("/usuario");
     };
     $('.carousel.carousel-slider').carousel({fullWidth: true});
-});
-
-app.controller('corpo', function($scope, $route, $routeParams, $location) {
-    if(!LOGADO)
-        $location.path("/login");
-    $scope.newTrans = function (){
-        $location.path("/nova");
-    };
-    $scope.showTrans = function () {
-        $location.path("/transacoes")
-    }
-});
-
-app.controller('novaTransacao', function($scope, $route, $routeParams, $location, $http) {
-    $scope.ch_adesao = false;
-    if(!LOGADO)
-        $location.path("/login");
-    $scope.$watch('adesao', function() {
-        $scope.ch_adesao = $scope.adesao === 'fixa';
+    $(document).ready(function(){
+        $('.slider').slider();
     });
-    $scope.valida = function () {
-        var form = {
-            "descricao": $scope.descricao,
-            "tipo": $scope.tipo,
-            "categoria": $scope.categoria,
-            "preco": parseFloat($scope.valor),
-            "local": $scope.local,
-            "adesao": $scope.adesao,
-            "repeticao": $scope.repeticao
-        };
-        console.log(form);
-        $http.put(SERVER + 'gastos', form).then(
-            function (result) {
-                if(result.data['erro']){
-                    alert("Não foi possivel registrar a transação");
-                    var erros = result.data['erros'];
-                    for(var key in erros){
-                        alert("ERRO: " + key + ": " + erros[key]);
-                    }
-                }
-                else{
-                    alert("Transação registrada com sucesso");
-                    $route.reload();
-                }
-                //console.log(result.data);
-            },
-            function (result) {
-                alert("Houve uma falha durante o processamento");
-                //console.log(result.data);
-            }
-        );
-    }
-});
 
-app.controller('verTransacoes', function ($scope, $route, $http, $location) {
-    if(!LOGADO)
-        $location.path("/login");
-    $http.get(SERVER + 'gastos').then(
-        function (result) {
-            if(!result.data['erro']){
-                $scope.existeTran = true;
-                $scope.transacoes = result.data['gasto'];
-                console.log($scope.transacoes);
-            }
-        },
-        function (result) {
-            $scope.existeTran = false;
-            alert("Não foi possível consultar as transações");
-        }
-    );
-    $scope.modTrans = function (id) {
-        $location.path("transacao/" + id);
-    };
-    $scope.remTrans = function (id) {
-        $http.delete(SERVER + 'gastos/' + id).then(
-            function (result) {
-                if(result.data['erro'])
-                    alert("Não foi possível remover a transação");
-                else {
-                    alert("Transação removida com sucesso!");
-                    $route.reload();
-                }
-            }
-        );
-    }
-});
-
-app.controller('modTransacao', function ($scope, $http, $route, $routeParams, $location) {
-    if(!LOGADO)
-        $location.path("/login");
-    var id = $routeParams.id;
-    $http.get(SERVER + 'gastos/' + id).then(
-        function (result) {
-            if(!result.data['erro']){
-                $scope.existeTran = true;
-                $scope.id = result.data['gasto']['id'];
-                $scope.descricao = result.data['gasto']['descricao'];
-                $scope.categoria = result.data['gasto']['categoria'];
-                $scope.valor = result.data['gasto']['preco'];
-                $scope.tipo = result.data['gasto']['tipo'];
-                $scope.local = result.data['gasto']['local'];
-                $scope.adesao = result.data['gasto']['adesao'];
-                $scope.repeticao = result.data['gasto']['repeticao'];
-                $scope.ch_adesao = result.data['gasto']['adesao'] === 'fixa';
-            }
-        },
-        function (result) {
-            $scope.ch_adesao = false;
-            $scope.existeTran = false;
-            alert("Houve um erro no processamento da requisição")
-        }
-    );
-    decimal();
-    $scope.$watch('adesao', function() {
-        $scope.ch_adesao = $scope.adesao === 'fixa';
-    });
-    $scope.valida = function () {
-        var form = {
-            "id": $scope.id,
-            "descricao": $scope.descricao,
-            "tipo": $scope.tipo,
-            "categoria": $scope.categoria,
-            "preco": parseFloat($scope.valor),
-            "local": $scope.local,
-            "adesao": $scope.adesao,
-            "repeticao": $scope.repeticao
-        };
-        //console.log(form);
-        $http.put(SERVER + 'gastos', form).then(
-            function (result) {
-                if(result.data['erro']){
-                    alert("Não foi possivel registrar a transação");
-                    var erros = result.data['erros'];
-                    for(var key in erros){
-                        alert("ERRO: " + key + ": " + erros[key]);
-                    }
-                }
-                else{
-                    alert("Transação registrada com sucesso");
-                    $route.reload();
-                }
-                //console.log(result.data);
-            },
-            function (result) {
-                alert("Houve uma falha durante o processamento");
-                //console.log(result.data);
-            }
-        );
-    }
 });
 
 app.controller('usuarios', function ($http, $scope, $route, $location) {
@@ -299,4 +400,3 @@ var decimal = function () {
     else
         v.value = x.toFixed(2);
 };
-

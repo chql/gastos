@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receitas</title>
+</head>
+<body ng-controller="verReceitas">
+    <div class="container">
+        <div class="row">
+            <h3 class="center">Receitas</h3>
+        </div>
+        <h5 class="center" ng-if="dados.length === 0">Não há receitas cadastradas!</h5>
+        <table class="highlight responsible-table" ng-if="dados.length > 0">
+            <thead>
+                <tr>
+                    <th>Origem</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Repetição</th>
+                    <th>Editar</th>
+                    <th>Remover</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="r in dados">
+                    <td>{{r.origem}}</td>
+                    <td>{{r.valor}}</td>
+                    <td>{{r.data}}</td>
+                    <td>{{r.repeticao}}</td>
+                    <td><i class="material-icons mao" ng-click="edit(r.id)">edit</i></td>
+                    <td><i class="material-icons mao" ng-click="remove(r.id)">delete</i></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

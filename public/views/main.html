@@ -6,19 +6,54 @@
 
 </head>
 <body>
-    <h3 class="center">Gerencie fácilmente suas receitas e despesas</h3>
-    <div class="container carousel carousel-slider center" data-indicators="true">
-        <div class="carousel-item grey darken-3 white-text">
-            <h2>Cadastro de Receitas</h2>
-            <p class="white-text">Com esta ferramenta vocễ pode fácimente cadastrar, ver, modificar e excluir suas receitas</p>
+    <div class="slider">
+        <ul class="slides">
+            <li>
+                <img src="../img/accounting.jpg">
+                <div class="caption left-align">
+                    <h3 class="black-text">Cadastro de Receitas</h3>
+                    <h5 class="black-text">Com esta ferramenta vocễ pode fácimente cadastrar, ver, modificar e excluir suas receitas</h5>
+                </div>
+            </li>
+            <li>
+                <img src="../img/finances2.jpg">
+                    <div class="caption right-align">
+                    <h3 class="black-text">Cadastro de Despesas</h3>
+                    <h5 class="black-text">Com esta ferramenta vocễ pode fácimente cadastrar, ver, modificar e excluir suas despesas item a item</h5>
+                </div>
+            </li>
+            <li>
+                <img src="../img/calendar.jpg">
+                <div class="caption center-align">
+                    <h3 class="black-text">Fixos ou Variáveis?</h3>
+                    <h5 class="black-text">Você pode cadastrar despesas e receitas fixas(ocorrem sempre em um determinado período) como aluguéis, internet, parcelas, etc ou depesas variáveis como faturas, feiras, boletos, etc.</h5>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="row container">
+        <div class="col s12 m4">
+            <p class="center"><i class="material-icons large">pageview</i></p>
+            <h5 class="center">Visualize suas transações</h5>
         </div>
-        <div class="carousel-item green darken-1 white-text">
-            <h2>Cadastro de Despesas</h2>
-            <p class="white-text">Com esta ferramenta vocễ pode fácimente cadastrar, ver, modificar e excluir suas despesas item a item</p>
+        <div class="col s12 m4">
+            <p class="center"><i class="material-icons large">edit</i></p>
+            <h5 class="center">Altere o que for necessário</h5>
         </div>
-        <div class="carousel-item orange darken-2 white-text">
-            <h2>Fixos ou Variáveis?</h2>
-            <p class="white-text">Você pode cadastrar despesas e receitas fixas(ocorrem sempre em um determinado período) como aluguéis, internet, parcelas, etc ou depesas variáveis como faturas, feiras, boletos, etc.</p>
+        <div class="col s12 m4">
+            <p class="center"><i class="material-icons large">subject</i></p>
+            <h5 class="center">Obtenha relatórios</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <h4 class="center">Crie sua conta agora mesmo!</h4>
+            <p class="center">
+                <button class="teal darken-4 btn waves-effect waves-light" type="button" ng-click="cadastro()">
+                    Criar Conta
+                    <i class="material-icons right">assignment_ind</i>
+                </button>
+            </p>
         </div>
     </div>
 </body>

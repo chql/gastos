@@ -30,7 +30,7 @@
                     <input id="pass2" type="password" ng-required="true" ng-model="senha2" class="validate">
                 </div>
                 <button class="teal darken-4 btn waves-effect waves-light" type="submit" name="action" ng-click="cadUser()"
-                        ng-disabled="!formUser.$valid">Enviar
+                        ng-disabled="!formUser.$valid || !(senha===senha2)">Enviar
                     <i class="material-icons right">send</i>
                 </button>
             </div>

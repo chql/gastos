@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Despesas</title>
+</head>
+<body ng-controller="verDespesas">
+<div class="container">
+    <div class="row">
+        <h3 class="center">Despesas</h3>
+    </div>
+    <h5 class="center" ng-if="dados.length === 0">Não há despesas cadastradas!</h5>
+    <table class="highlight responsible-table" ng-if="dados.length > 0">
+        <thead>
+        <tr>
+            <th>Origem</th>
+            <th>Local</th>
+            <th>Valor</th>
+            <th>Data</th>
+            <th>Repetição</th>
+            <th>Itens</th>
+            <th>Editar</th>
+            <th>Remover</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="r in dados">
+            <td>{{r.origem}}</td>
+            <td>{{r.local}}</td>
+            <td>{{r.total}}</td>
+            <td>{{r.data}}</td>
+            <td>{{r.repeticao}}</td>
+            <td><i data-target="{{r.id}}" class="material-icons mao">list</i></button></td>
+            <td><i class="material-icons mao" ng-click="edit(r.id)">edit</i></td>
+            <td><i class="material-icons mao" ng-click="remove(r.id)">delete</i></td>
+        </tr>
+        </tbody>
+    </table>
+    <div id="modals">
+        <div id="{{r.id}}" class="modal" ng-repeat="r in dados">
+            <div class="modal-content">
+                <h4>Itens:</h4>
+                <table class="highlight responsible-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>V. Unitário</th>
+                            <th>V. Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="i in r.itens">
+                            <td>{{i.descricao}}</td>
+                            <td>{{i.quantidade}}</td>
+                            <td>{{i.valor}}</td>
+                            <td>{{i.valort}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
