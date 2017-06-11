@@ -30,14 +30,14 @@
             <td>{{r.total}}</td>
             <td>{{r.data}}</td>
             <td>{{r.repeticao}}</td>
-            <td><i data-target="{{r.id}}" class="material-icons mao">list</i></button></td>
-            <td><i class="material-icons mao" ng-click="edit(r.id)">edit</i></td>
-            <td><i class="material-icons mao" ng-click="remove(r.id)">delete</i></td>
+            <td><i data-target="{{r['_id']}}" class="modal-trigger material-icons mao">list</i></button></td>
+            <td><i class="material-icons mao" ng-click="edit(r['_id'])">edit</i></td>
+            <td><i class="material-icons mao" ng-click="remove(r['_id'])">delete</i></td>
         </tr>
         </tbody>
     </table>
     <div id="modals">
-        <div id="{{r.id}}" class="modal" ng-repeat="r in dados">
+        <div id="{{r['_id']}}" class="modal" ng-repeat="r in dados">
             <div class="modal-content">
                 <h4>Itens:</h4>
                 <table class="highlight responsible-table">

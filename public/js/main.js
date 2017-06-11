@@ -1,6 +1,5 @@
 const SERVER = "http://localhost:8000/api/";
-var LOGADO = false;
-var app = angular.module('cuga', ['ngRoute']);
+var app = angular.module('cuga', ['ngRoute', 'ngCookies']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
@@ -45,8 +44,10 @@ app.config(function ($routeProvider) {
         });
 });
 
-app.controller('home', function ($scope, $route, $location) {
-    $scope.pessoa = "Fulano";
+app.controller('home', function ($scope, $route, $location, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
     $scope.verDespesas = function () {
         $location.path("/verDespesas")
     };
@@ -61,63 +62,85 @@ app.controller('home', function ($scope, $route, $location) {
     };
 });
 
-app.controller('upReceita', function ($scope, $location, $http, $routeParams) {
-    var dados = [
-        {id: "123", origem: "asd123", valor: 245.45, data: "2017-06-30", repeticao: "dia"},
-        {id: "456", origem: "asd456", valor: 246.45, data: "2017-06-30", repeticao: "dia"},
-        {id: "789", origem: "asd789", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
-        {id: "000", origem: "asd000", valor: 246.45, data: "2017-06-10", repeticao: "dia"}
-    ];
-    // TODO: RECEBER DADOS DA API
-    for(var i = 0; i<dados.length; i++){
-        if(dados[i]['id'] === $routeParams.id){
-            console.log(dados[i]);
-            $scope.origem = dados[i].origem;
-            $scope.valor = dados[i].valor;
-            var d = new Date(dados[i].data);
-            d.setMinutes(d.getTimezoneOffset());
-            $scope.data = d;
-            $scope.repeticao = "dia";
-        }
+app.controller('upReceita', function ($scope, $location, $http, $routeParams, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
     }
+    $http.get(SERVER + "receitas/" + $routeParams.id).then(
+        function (response) {
+            //console.log(response);
+            if(!response.data['erro']){
+                $scope.origem = response.data['receita'].origem;
+                $scope.valor = response.data['receita'].valor;
+                var d = new Date(response.data['receita'].data);
+                d.setMinutes(d.getTimezoneOffset());
+                $scope.data = d;
+                $scope.repeticao = response.data['receita'].repeticao;
+            }
+        }
+    );
+
     $scope.upReceita = function () {
         var form = {
-            id: $routeParams.id,
             origem: $scope.origem,
             repeticao: $scope.repeticao,
             valor: $scope.valor,
             data: $scope.data.toISOString().substring(0,10)
         };
-        console.log(form);
-        // TODO: ENVIAR PARA A API
+        //console.log(form);
+        $http.put(SERVER + "receitas/" + $routeParams.id, form).then(
+            function (response) {
+                if(!response.data['erro'])
+                    alert("Receita atualizada com sucesso!");
+                else
+                    alert("Não foi possível atualizar a receita");
+            }
+        );
     }
 });
 
-app.controller('verReceitas', function ($scope, $route, $http, $location) {
-    $scope.dados = [
-        {id: "123", origem: "asd123", valor: 245.45, data: "2017-06-10", repeticao: "dia"},
-        {id: "456", origem: "asd456", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
-        {id: "789", origem: "asd789", valor: 246.45, data: "2017-06-10", repeticao: "dia"},
-        {id: "000", origem: "asd000", valor: 246.45, data: "2017-06-10", repeticao: "dia"}
-    ]; //TODO: RECEBER RECEITAS DA API
+app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
+    $http.get(SERVER + "receitas").then(
+        function (response) {
+            //console.log(response);
+            if(!response.data['erro'])
+                $scope.dados = response.data['receitas'];
+        },
+        function (response) {
+            //console.log(response);
+        }
+    );
     $scope.remove = function (id) {
-        console.log("Remove o " + id);
+        //console.log("Remove o " + id);
         var ans = confirm("Tem certeza que deseja excluir este registro?");
         if(ans){
-            for(var i = 0; i<$scope.dados.length; i++){
-                if($scope.dados[i]['id'] === id){
-                    $scope.dados.splice(i, 1);
+            $http.delete(SERVER + "receitas/" + id).then(
+                function (response) {
+                    if(!response.data['erro'])
+                        alert("Registro excluido com sucesso!");
+                    else
+                        alert("Não foi possivel excluir o registro");
+                },
+                function () {
+                    alert("Não foi possivel excluir o registro");
                 }
-            }
-        }// TODO: REMOVER COM A API
+            );
+            $route.reload();
+        }
     };
     $scope.edit = function (id) {
-        console.log("Edita o " + id);
+        //console.log("Edita o " + id);
         $location.path("/verReceitas/" + id);
     }
 });
 
-app.controller('cadReceitas', function ($scope, $route, $location, $http) {
+app.controller('cadReceitas', function ($scope, $route, $location, $http, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
     $scope.cadReceita = function () {
         var dados = {
             origem: $scope.origem,
@@ -125,10 +148,10 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
             valor: $scope.valor,
             data: $scope.data.toISOString().substring(0,10)
         };
-        console.log(dados);
-        //TODO: CONFERIR ENDPOINT
+        //console.log(dados);
         $http.post(SERVER + "receitas", dados).then(
             function (result) {
+                //console.log(result);
                 if (result.data['erro']) {
                     alert("Não foi possível realizar a operacão");
                 }
@@ -137,54 +160,37 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
                     $location.path("/home");
                 }
             },
-            function () {
+            function (result) {
+                //console.log(result);
                 alert("Não foi possível realizar a operação");
             }
         )
     };
 });
 
-app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $http) {
-    var dados = [
-        {
-            id: 1,
-            origem: "Sao Luiz",
-            local: "Crato",
-            repeticao: "dia",
-            data: "2017-06-10",
-            itens: [
-                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
-                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
-            ],
-            total: "8.99"
-        },
-        {
-            id: 2,
-            origem: "Sao Luiz",
-            local: "Crato",
-            repeticao: "mes",
-            data: "2017-06-18",
-            itens: [
-                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
-                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
-            ],
-            total: "8.99"
-        }
-    ];
-    for(var i = 0; i<dados.length; i++){
-        if(dados[i]['id'] == $routeParams.id){
-            console.log(dados[i]);
-            $scope.origem = dados[i].origem;
-            $scope.local = dados[i].local;
-            $scope.total = dados[i].total;
-            var d = new Date(dados[i].data);
-            d.setMinutes(d.getTimezoneOffset());
-            $scope.data = d;
-            $scope.repeticao = dados[i].repeticao;
-            $scope.itens =  dados[i].itens;
-        }
+app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $http, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
     }
-
+    $scope.itens = [];
+    $http.get(SERVER + "despesas/" + $routeParams.id).then(
+        function (result) {
+            //console.log(result);
+            if(!result.data['erro']) {
+                $scope.origem = result.data['despesa'].origem;
+                $scope.local = result.data['despesa'].local;
+                $scope.total = result.data['despesa'].total;
+                var d = new Date(result.data['despesa'].data);
+                d.setMinutes(d.getTimezoneOffset());
+                $scope.data = d;
+                $scope.repeticao = result.data['despesa'].repeticao;
+                $scope.itens = result.data['despesa'].itens;
+            }
+        },
+        function (result) {
+            //console.log(result);
+        }
+    );
     $scope.newItem = function () {
         $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
     };
@@ -196,9 +202,9 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
     };
     $scope.ftotal = function () {
         var c = 0;
-        $scope.itens.forEach(function (v) {
-            c += parseFloat(v.valort);
-        });
+        for(var i in $scope.itens){
+            c += parseFloat($scope.itens[i]['valort']);
+        }
         $scope.total = c.toFixed(2);
     };
     $scope.upDespesa = function () {
@@ -210,15 +216,14 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
             itens: $scope.itens,
             total: $scope.total
         };
-        console.log(form);
-        //TODO: CONFERIR ENDPOINT
-        $http.post(SERVER + "despesas", form).then(
+        //console.log(form);
+        $http.put(SERVER + "despesas/" + $routeParams.id, form).then(
             function (result) {
                 if (result.data['erro']) {
                     alert("Não foi possível realizar a operacão");
                 }
                 else{
-                    alert("Despesa armazenada com sucesso");
+                    alert("Despesa atualizada com sucesso");
                     $location.path("/home");
                 }
             },
@@ -230,55 +235,56 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
     
 });
 
-app.controller('verDespesas', function ($scope, $route, $location, $http) {
-    $(document).ready(function(){
-        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
-        $('.modal').modal();
-    });
-    $scope.dados = [
-        {
-            id: 1,
-            origem: "Sao Luiz",
-            local: "Crato",
-            repeticao: "dia",
-            data: "2017-06-10",
-            itens: [
-                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
-                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
-                ],
-            total: "8.99"
-        },
-        {
-            id: 2,
-            origem: "Sao Luiz",
-            local: "Crato",
-            repeticao: "mes",
-            data: "2017-06-18",
-            itens: [
-                {id: "1", descricao: "Leite", quantidade: 1, valor: 3.99, valort: "3.99"},
-                {id: "2", descricao: "Pao", quantidade: 5, valor: 1, valort: "5.00"}
-            ],
-            total: "8.99"
-        }
-    ];
-    $scope.remove = function (id) {
-        console.log("Remove o " + id);
-        var ans = confirm("Tem certeza que deseja excluir este registro?");
-        if(ans){
-            for(var i = 0; i<$scope.dados.length; i++){
-                if($scope.dados[i]['id'] === id){
-                    $scope.dados.splice(i, 1);
+app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
+    $http.get(SERVER + "despesas").then(
+        function (response) {
+            if(!response.data['erro']) {
+                $scope.dados = response.data['despesas'];
+                $scope.itens = $scope.dados['itens'];
+                //console.log($scope.dados);
+                for(var i in $scope.dados){
+                    $scope.dados[i]['_id'] = "i" + $scope.dados[i]['_id'];
                 }
             }
-        }// TODO: REMOVER COM A API
+        },
+        function (response) {
+            //console.log(response);
+        }
+    );
+    $scope.remove = function (id) {
+        //console.log("Remove o " + id);
+        var ans = confirm("Tem certeza que deseja excluir este registro?");
+        if(ans){
+            $http.delete(SERVER + "despesas/" + id.substring(1, id.length)).then(
+                function (response) {
+                    if(!response.data['erro'])
+                        alert("Registro excluido com sucesso!");
+                    else
+                        alert("Não foi possivel excluir o registro");
+                },
+                function () {
+                    alert("Não foi possivel excluir o registro");
+                }
+            );
+            $route.reload();
+        }
     };
     $scope.edit = function (id) {
-        console.log("Edita o " + id);
-        $location.path("/verDespesas/" + id);
-    }
+        //console.log("Edita o " + id.substring(1, id.length));
+        $location.path("/verDespesas/" + id.substring(1, id.length));
+    };
+    $(document).ready(function(){
+        $('.modal').modal();
+    });
 });
 
-app.controller('cadDespesas', function ($scope, $route, $location, $http) {
+app.controller('cadDespesas', function ($scope, $route, $location, $http, $cookies) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
     $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: 0, valort: ""}];
     $scope.total = 0.0;
     $scope.newItem = function () {
@@ -306,10 +312,10 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
             itens: $scope.itens,
             total: $scope.total
         };
-        console.log(form);
-        //TODO: CONFERIR ENDPOINT
+        //console.log(form);
         $http.post(SERVER + "despesas", form).then(
             function (result) {
+                //console.log(result);
                 if (result.data['erro']) {
                     alert("Não foi possível realizar a operacão");
                 }
@@ -325,11 +331,13 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     };
 });
 
-app.controller('main', function ($scope, $route, $location) {
-    if (LOGADO === false)
-        $scope.logado = true;
+app.controller('main', function ($scope, $route, $location, $cookies) {
+    $scope.logado = $cookies.get("PHPSESSID") !== undefined;
     $scope.home = function (){
-        $location.path("/");
+        if($scope.logado)
+            $location.path("/home");
+        else
+            $location.path("/");
     };
     $scope.login = function (){
         $location.path("/login");
@@ -337,24 +345,35 @@ app.controller('main', function ($scope, $route, $location) {
     $scope.cadastro = function (){
         $location.path("/usuario");
     };
-    $('.carousel.carousel-slider').carousel({fullWidth: true});
+    $scope.logout = function () {
+        $cookies.remove("PHPSESSID");
+        $scope.logado = false;
+        $scope.home();
+    };
     $(document).ready(function(){
         $('.slider').slider();
     });
-
 });
 
-app.controller('usuarios', function ($http, $scope, $route, $location) {
+app.controller('usuarios', function ($http, $scope, $route, $location, $cookies, $templateCache) {
+    if($cookies.get("PHPSESSID") === undefined){
+        $location.path('/login');
+    }
+    else{
+        $location.path('/home');
+    }
     $scope.cadUser = function () {
         var user = {
+            "nome": $scope.nome,
             "login": $scope.username,
             "senha": $scope.senha
         };
-        $http.put(SERVER + "usuarios", user).then(
+        $http.post(SERVER + "usuarios", user).then(
             function (result) {
+                //console.log(result);
                 if(result.data['erro']){
                     alert("Não foi possível cadastrar o usuário");
-                    $location.reload();
+                    $route.reload();
                 }
                 else{
                     alert("Usuário cadastrado com sucesso");
@@ -363,7 +382,7 @@ app.controller('usuarios', function ($http, $scope, $route, $location) {
             },
             function () {
                 alert("Não foi possível cadastrar o usuário");
-                $location.reload();
+                $route.reload();
             }
         )
 
@@ -377,16 +396,13 @@ app.controller('usuarios', function ($http, $scope, $route, $location) {
             function (result) {
                 if (result.data['erro']){
                     alert("Não foi possível fazer o login");
-                    $location.reload();
                 }
                 else{
-                    LOGADO = true;
-                    $location.path('/home');
+                    location.reload();
                 }
             },
             function () {
                 alert("Não foi possível fazer o login");
-                $location.reload();
             }
         )
     }

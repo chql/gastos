@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-materialize/0.2.2/angular-materialize.min.js"></script>
@@ -23,7 +24,8 @@
             <div class="nav-wrapper red darken-4">
                 <a ng-click="home()" class="brand-logo center">CUGA</a>
                 <ul id="nav-mobile" class="right">
-                    <li><a ng-click="login()"><i class="material-icons center">perm_identity</i></a></li>
+                    <li><a ng-if="!logado" ng-click="login()"><i class="material-icons center">perm_identity</i></a></li>
+                    <li><a ng-if="logado" ng-click="logout()"><i class="material-icons center">power_settings_new</i></a></li>
                 </ul>
             </div>
         </nav>

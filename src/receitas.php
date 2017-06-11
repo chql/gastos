@@ -46,7 +46,7 @@ $app->get('/receitas/{id}', function($request, $response, $args) {
     $r['_id'] = (string)$r['_id'];
 	return $response->withJson([
 		'erro' => false,
-		'receita' => $d
+		'receita' => $r
 	]);
 });
 
