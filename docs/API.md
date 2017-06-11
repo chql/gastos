@@ -44,6 +44,32 @@
 | PUT    | [receita](#r-receita) | [erros](#r-erros) | Altera uma receita. |
 | DELETE |             |          | Deleta uma receita. |
 
+### `/locais`
+
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| GET   |             | [locais](#r-local):array | Obtém locais do usuário. |
+| POST  | [local](#r-local) | [erros](#r-erros) | Cadastra um novo local para o usuário. |
+
+### `/locais/{id}`
+
+| Tipo   | Solicitação | Resposta | Descrição |
+| ------ | ----------- | -------- | --------- |
+| DELETE |             |          | Deleta um local do usuário. |
+
+### `/cidades`
+
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| GET   |             | [cidades](#r-cidade):array | Obtém cidades do usuário. |
+| POST  | [cidade](#r-cidade) | [erros](#r-erros) | Cadastra uma nova cidade do usuário. |
+
+### `/cidades/{id}`
+
+| Tipo   | Solicitação | Resposta | Descrição |
+| ------ | ----------- | -------- | --------- |
+| DELETE |             |          | Deleta uma cidade do usuário. |
+
 ## Estruturas
 
 <a name="r-erros"/>
@@ -85,5 +111,21 @@
         "origem": <string>,
         "repeticao": "<variavel|dia|semana|quinzena|mes|ano>",
         "data": "<YYYY-MM-DD>"
+    }
+
+<a name="r-local">
+
+### Local
+
+    {
+        "nome": <string>
+    }
+
+<a name="r-cidade">
+
+### Cidade
+
+    {
+        "nome": <string>
     }
 
