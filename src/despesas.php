@@ -13,9 +13,7 @@ $app->post('/despesas', function($request, $response) {
         ]);
     }
 
-    // TODO: Adicionar usuario ao container da solicitacao
-    $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
-    $dados['u'] = $user->login;
+    $dados['u'] = $_SESSION['login'];
 
     $result = $this->db->despesas->insertOne($dados);
 
@@ -26,28 +24,28 @@ $app->post('/despesas', function($request, $response) {
 });
 
 $app->get('/despesas', function($request, $response) {
-	$despesas = [];
+    $despesas = [];
 
-    $cursor = $this->db->despesas->find(['u' => $_SESSION['user']]);
+    $cursor = $this->db->despesas->find(['u' => $_SESSION['login']]);
     foreach($cursor as $d) {
         $d['_id'] = (string)$d['_id'];
         $despesas[] = $d;
     }
 
-	return $response->withJson([
-		'erro' => false,
-		'despesas' => $despesas
-	]);
+    return $response->withJson([
+        'erro' => false,
+        'despesas' => $despesas
+    ]);
 });
 
 $app->get('/despesas/{id}', function($request, $response, $args) {
     $id = new \MongoDB\BSON\ObjectID($args['id']);
     $d = $this->db->despesas->findOne(['_id' => $id]);
     $d['_id'] = (string)$d['_id'];
-	return $response->withJson([
-		'erro' => false,
-		'despesa' => $d
-	]);
+    return $response->withJson([
+        'erro' => false,
+        'despesa' => $d
+    ]);
 });
 
 $app->put('/despesas/{id}', function($request, $response, $args) {
@@ -63,11 +61,9 @@ $app->put('/despesas/{id}', function($request, $response, $args) {
         ]);
     }
 
-    // TODO: Adicionar usuario ao container da solicitacao
-    $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
-    $dados['u'] = $user->login;
+    $dados['u'] = $_SESSION['login'];
 
-	$id = new \MongoDB\BSON\ObjectID($args['id']);
+    $id = new \MongoDB\BSON\ObjectID($args['id']);
     $result = $this->db->despesas->updateOne(['_id' => $id], [
         '$set' => $dados
     ]);
@@ -78,8 +74,8 @@ $app->put('/despesas/{id}', function($request, $response, $args) {
 });
 
 $app->delete('/despesas/{id}', function($request, $response, $args) {
-	$id = new \MongoDB\BSON\ObjectID($args['id']);
-	$this->db->despesas->deleteOne(['_id' => $id]);
+    $id = new \MongoDB\BSON\ObjectID($args['id']);
+    $this->db->despesas->deleteOne(['_id' => $id]);
     return $response->withJson([
         'erro' => false
     ]);

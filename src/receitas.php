@@ -13,9 +13,7 @@ $app->post('/receitas', function($request, $response) {
         ]);
     }
 
-    // TODO: Adicionar usuario ao container da solicitacao
-    $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
-    $dados['u'] = $user->login;
+    $dados['u'] = $_SESSION['login'];
 
     $result = $this->db->receitas->insertOne($dados);
 
@@ -28,7 +26,7 @@ $app->post('/receitas', function($request, $response) {
 $app->get('/receitas', function($request, $response) {
 	$receitas = [];
 
-    $cursor = $this->db->receitas->find(['u' => $_SESSION['user']]);
+    $cursor = $this->db->receitas->find(['u' => $_SESSION['login']]);
     foreach($cursor as $r) {
         $r['_id'] = (string)$r['_id'];
         $receitas[] = $r;
@@ -63,9 +61,7 @@ $app->put('/receitas/{id}', function($request, $response, $args) {
         ]);
     }
 
-    // TODO: Adicionar usuario ao container da solicitacao
-    $user = $this->db->usuarios->findOne(['login' => $_SESSION['user']]);
-    $dados['u'] = $user->login;
+    $dados['u'] = $_SESSION['login'];
 
 	$id = new \MongoDB\BSON\ObjectID($args['id']);
     $result = $this->db->receitas->updateOne(['_id' => $id], [

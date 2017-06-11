@@ -69,7 +69,7 @@ $app->post('/usuarios/login', function($request, $response) {
         ]);
     }
 
-    $_SESSION['user'] = $user->login;
+    $_SESSION['login'] = $user->login;
 
     return $response->withJson([
         'erro' => false,
