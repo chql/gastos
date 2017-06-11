@@ -33,7 +33,7 @@ class ValidaUsuario extends Form
         $filter->setRule(
             'senha',
             'Senha inválida.',
-            function($senha) {
+            function($senha) use ($filter) {
                 $pass = true;
                 if(is_string($senha) === false)
                     return false;

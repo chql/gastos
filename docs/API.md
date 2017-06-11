@@ -1,189 +1,89 @@
-# Especificação de Endpoints
+# Especificação
 
-## `/usuarios`
+## Endpoints
 
-### Solicitação
+### `/usuarios`
 
-Cadastra um novo usuário.
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| POST  | [Usuário](#r-usuario) | [erros](#r-erros) | Cadastra um novo usuário. |
 
-    PUT /usuarios
-    Content-Type: application/json;charset=utf-8
+### `/usuarios/login`
 
-    {
-        "login": "<username>",
-        "senha": "<password>"
-    }
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| POST  | [Usuário](#r-usuario) | [erros](#r-erros) | Inicia uma nova sessão para o usuário. |
 
-### Resposta
+### `/despesas`
 
-    200 OK
-    Content-Type: application/json;charset=utf-8
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| GET   |             | [despesas](#r-despesa):array | Obtém despesas do usuário. |
+| POST  | [despesa](#r-despesa) | [erros](#r-erros) | Cadastra uma nova despesa do usuário. |
+
+### `/despesas/{id}`
+
+| Tipo   | Solicitação | Resposta | Descrição |
+| ------ | ----------- | -------- | --------- |
+| GET    |             | [despesa](#r-despesa) | Obtém uma despesa. |
+| PUT    | [despesa](#r-despesa) | [erros](#r-erros) | Altera uma despesa. |
+| DELETE |             |          | Deleta uma depesa. |
+
+### `/receitas`
+
+| Tipo  | Solicitação | Resposta | Descrição |
+| ----- | ----------- | -------- | --------- |
+| GET   |             | [receitas](#r-receita):array | Obtém receitas do usuário. |
+| POST  | [receita](#r-receita) | [erros](#r-erros) | Cadastra uma nova receita do usuário. |
+
+### `/receitas/{id}`
+
+| Tipo   | Solicitação | Resposta | Descrição |
+| ------ | ----------- | -------- | --------- |
+| GET    |             | [receita](#r-receita) | Obtém uma receita. |
+| PUT    | [receita](#r-receita) | [erros](#r-erros) | Altera uma receita. |
+| DELETE |             |          | Deleta uma receita. |
+
+## Estruturas
+
+<a name="r-erros"/>
+
+### Erros de validação
 
     {
         "erro": <true|false>,
         "erros": {
-            "<campo>": <array|undefined>
+            "<campo>": array
         }
     }
 
-## `/usuarios/login`
+<a name="r-usuario"/>
 
-Autentica um usuário já existente.
-
-### Solicitação
-
-    POST /usuarios/login
-    Content-Type: application/json;charset=utf-8
-    Set-Cookie: PHPSESSID=<token>
+### Usuário
 
     {
-        "login": "<username>",
-        "senha": "<password>"
+        "login": <string>,
+        "senha": <string>
     }
 
-### Resposta
+<a name="r-despesa"/>
 
-    200 OK
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        }
-    }
-
-## `/gastos`
-
-Cadastra novos gastos do usuário.
-
-### Solicitação
-
-    PUT /gastos
-    Content-Type: application/json;charset=utf-8
+### Despesa
 
     {
-        "descricao": <string>,
-        "tipo": "<receita|despesa>",
-        "categoria": <string>,
-        "preco": <double>,
+        "origem": <string>,
         "local": <string>,
-        "adesao": "<variavel|mensal|fixa>"
+        "repeticao": "<variavel|dia|semana|quinzena|mes|ano>",
+        "data": "<YYYY-MM-DD>"
     }
 
-### Resposta
+<a name="r-receita">
 
-    200 OK
-    Content-Type: application/json;charset=utf-8
+### Receita
 
     {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        }
+        "origem": <string>,
+        "repeticao": "<variavel|dia|semana|quinzena|mes|ano>",
+        "data": "<YYYY-MM-DD>"
     }
 
-Obtém os gastos
-
-### Solicitação
-
-    GET /gastos
-    Content-Type: application/json;charset=utf-8
-
-
-### Resposta
-
-    200 OK
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        },
-        "gastos": [
-            {},{}
-        ]
-    }
-    
-
-Obtém um gasto
-
-### Solicitação
-
-    GET /gastos?id=string
-    Content-Type: application/json;charset=utf-8
-
-
-### Resposta
-
-    200 OK
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        },
-        "gasto": {
-            "id": <string>,
-            "descricao": <string>,
-            "tipo": "<receita|despesa>",
-            "categoria": <string>,
-            "preco": <double>,
-            "local": <string>,
-            "adesao": "<variavel|mensal|fixa>"
-        }
-    }
-
-Atualiza um gasto do usuário
-
-### Solicitação
-
-    POST /gastos
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "id": <string>,
-        "descricao": <string>,
-        "tipo": "<receita|despesa>",
-        "categoria": <string>,
-        "preco": <double>,
-        "local": <string>,
-        "adesao": "<variavel|mensal|fixa>"
-    }
-
-### Resposta
-
-    200 OK
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        }
-    }
-    
-Remove um gasto do usuário
-
-### Solicitação
-
-    DELETE /gastos
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "id": <string>
-    }
-
-### Resposta
-
-    200 OK
-    Content-Type: application/json;charset=utf-8
-
-    {
-        "erro": <true|false>,
-        "erros": {
-            "<campo>": <array|undefined>
-        }
-    }

@@ -1,16 +1,17 @@
 <?php
 
-$app->put('/usuarios', function($request, $response) {
+$app->post('/usuarios', function($request, $response) {
     $dados = $request->getParsedBody();
     $form  = new \Validacao\ValidaUsuario;
 
     $form->fill($dados);
 
-    if($form->filter() === false)
+    if($form->filter() === false) {
         return $response->withJson([
             'erro' => true,
             'erros' => $form->getMessages()
         ]);
+    }
 
     $user = $this->db->usuarios->findOne([
         'login' => $dados['login']
@@ -34,12 +35,6 @@ $app->put('/usuarios', function($request, $response) {
     ]);
 });
 
-$app->get('/usuarios/logout', function($request, $response) {
-    session_destroy();
-    return $response->withJson([
-        'erro' => false
-    ]);
-});
 
 $app->post('/usuarios/login', function($request, $response) {
     $dados = $request->getParsedBody();
@@ -47,11 +42,12 @@ $app->post('/usuarios/login', function($request, $response) {
 
     $form->fill($dados);
 
-    if($form->filter() === false)
+    if($form->filter() === false) {
         return $response->withJson([
             'erro' => true,
             'erros' => $form->getMessages()
         ]);
+    }
 
     $user = $this->db->usuarios->findOne([
         'login' => $dados['login']
@@ -80,3 +76,11 @@ $app->post('/usuarios/login', function($request, $response) {
         'login' => $user->login
     ]);
 });
+
+$app->get('/usuarios/logout', function($request, $response) {
+    session_destroy();
+    return $response->withJson([
+        'erro' => false
+    ]);
+});
+
