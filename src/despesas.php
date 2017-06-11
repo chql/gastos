@@ -21,7 +21,7 @@ $app->post('/despesas', function($request, $response) {
         'erro' => false,
         'insertedId' => (string)$result->getInsertedId()
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->get('/despesas', function($request, $response) {
     $despesas = [];
@@ -36,7 +36,7 @@ $app->get('/despesas', function($request, $response) {
         'erro' => false,
         'despesas' => $despesas
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->get('/despesas/{id}', function($request, $response, $args) {
     $id = new \MongoDB\BSON\ObjectID($args['id']);
@@ -46,7 +46,7 @@ $app->get('/despesas/{id}', function($request, $response, $args) {
         'erro' => false,
         'despesa' => $d
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->put('/despesas/{id}', function($request, $response, $args) {
     $dados = $request->getParsedBody();
@@ -71,7 +71,7 @@ $app->put('/despesas/{id}', function($request, $response, $args) {
     return $response->withJson([
         'erro' => false,
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->delete('/despesas/{id}', function($request, $response, $args) {
     $id = new \MongoDB\BSON\ObjectID($args['id']);
@@ -79,5 +79,5 @@ $app->delete('/despesas/{id}', function($request, $response, $args) {
     return $response->withJson([
         'erro' => false
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 

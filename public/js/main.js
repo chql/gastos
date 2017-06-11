@@ -357,7 +357,7 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
 
 app.controller('usuarios', function ($http, $scope, $route, $location, $cookies, $templateCache) {
     if($cookies.get("PHPSESSID") === undefined){
-        $location.path('/login');
+        // $location.path('/login');
     }
     else{
         $location.path('/home');

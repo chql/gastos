@@ -35,7 +35,6 @@ $app->post('/usuarios', function($request, $response) {
     ]);
 });
 
-
 $app->post('/usuarios/login', function($request, $response) {
     $dados = $request->getParsedBody();
     $form = new \Validacao\ValidaUsuario;
@@ -82,5 +81,5 @@ $app->get('/usuarios/logout', function($request, $response) {
     return $response->withJson([
         'erro' => false
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 

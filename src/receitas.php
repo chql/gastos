@@ -21,10 +21,10 @@ $app->post('/receitas', function($request, $response) {
         'erro' => false,
         'insertedId' => (string)$result->getInsertedId()
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->get('/receitas', function($request, $response) {
-	$receitas = [];
+    $receitas = [];
 
     $cursor = $this->db->receitas->find(['u' => $_SESSION['login']]);
     foreach($cursor as $r) {
@@ -32,21 +32,21 @@ $app->get('/receitas', function($request, $response) {
         $receitas[] = $r;
     }
 
-	return $response->withJson([
-		'erro' => false,
-		'receitas' => $receitas
-	]);
-});
+    return $response->withJson([
+        'erro' => false,
+        'receitas' => $receitas
+    ]);
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->get('/receitas/{id}', function($request, $response, $args) {
     $id = new \MongoDB\BSON\ObjectID($args['id']);
     $r = $this->db->receitas->findOne(['_id' => $id]);
     $r['_id'] = (string)$r['_id'];
-	return $response->withJson([
-		'erro' => false,
-		'receita' => $r
-	]);
-});
+    return $response->withJson([
+        'erro' => false,
+        'receita' => $r
+    ]);
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->put('/receitas/{id}', function($request, $response, $args) {
     $dados = $request->getParsedBody();
@@ -63,7 +63,7 @@ $app->put('/receitas/{id}', function($request, $response, $args) {
 
     $dados['u'] = $_SESSION['login'];
 
-	$id = new \MongoDB\BSON\ObjectID($args['id']);
+    $id = new \MongoDB\BSON\ObjectID($args['id']);
     $result = $this->db->receitas->updateOne(['_id' => $id], [
         '$set' => $dados
     ]);
@@ -71,13 +71,13 @@ $app->put('/receitas/{id}', function($request, $response, $args) {
     return $response->withJson([
         'erro' => false,
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
 $app->delete('/receitas/{id}', function($request, $response, $args) {
-	$id = new \MongoDB\BSON\ObjectID($args['id']);
-	$this->db->receitas->deleteOne(['_id' => $id]);
+    $id = new \MongoDB\BSON\ObjectID($args['id']);
+    $this->db->receitas->deleteOne(['_id' => $id]);
     return $response->withJson([
         'erro' => false
     ]);
-});
+})->add( \Core\AutenticacaoMiddleware::getInstance() );
 
