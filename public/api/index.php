@@ -18,5 +18,6 @@ $app->add(function($request, $response, $next) {
 
 include_once '../../src/usuarios.php';
 include_once '../../src/despesas.php';
+include_once '../../src/receitas.php';
 
 $app->run();
