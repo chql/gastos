@@ -1,4 +1,4 @@
-const SERVER = "http://localhost:8000/api/";
+const SERVER = "/api/";
 var app = angular.module('cuga', ['ngRoute', 'ngCookies']);
 app.config(function ($routeProvider) {
     $routeProvider

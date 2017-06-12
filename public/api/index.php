@@ -6,7 +6,17 @@ $app = new \Slim\App();
 $container = $app->getContainer();
 
 $container['db'] = function($c) {
-    return (new \MongoDB\Client())->gastos;
+    return (new \MongoDB\Client(
+		null,
+		[],
+		[
+			'typeMap' => [
+				'root' => 'array',
+				'document' => 'array',
+				'array' => 'array'
+			]
+		]
+	))->gastos;
 };
 
 $app->add(function($request, $response, $next) {
