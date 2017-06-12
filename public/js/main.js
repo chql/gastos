@@ -90,13 +90,15 @@ app.controller('upReceita', function ($scope, $location, $http, $routeParams, $c
         //console.log(form);
         $http.put(SERVER + "receitas/" + $routeParams.id, form).then(
             function (response) {
-                if(!response.data['erro'])
+                if(!response.data['erro']){
                     alert("Receita atualizada com sucesso!");
+                    $location.path("/home");
+                }
                 else
                     alert("Não foi possível atualizar a receita");
             }
         );
-    }
+    };
 });
 
 app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies) {
@@ -106,8 +108,14 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
     $http.get(SERVER + "receitas").then(
         function (response) {
             //console.log(response);
-            if(!response.data['erro'])
+            if(!response.data['erro']){
                 $scope.dados = response.data['receitas'];
+                for(var i in $scope.dados) {
+                    var dd = $scope.dados[i]['data'].split("-");
+                    $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
+                    $scope.dados[i]['valor'] = "R$ " + $scope.dados[i]['valor'];
+                }
+            }
         },
         function (response) {
             //console.log(response);
@@ -184,7 +192,10 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
                 d.setMinutes(d.getTimezoneOffset());
                 $scope.data = d;
                 $scope.repeticao = result.data['despesa'].repeticao;
-                $scope.itens = result.data['despesa'].itens;
+                for(var v in result.data['despesa'].itens){
+                    $scope.itens.push(result.data['despesa'].itens[v]);
+                }
+               //console.log($scope.itens);
             }
         },
         function (result) {
@@ -195,8 +206,10 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
         $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
     };
     $scope.remItem = function () {
-        if($scope.itens.length > 1)
+        if($scope.itens.length > 1) {
             $scope.itens.splice($scope.itens.length - 1);
+            $scope.ftotal();
+        }
         else
             alert("Deve haver pelo menos um item");
     };
@@ -232,7 +245,47 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
             }
         )
     };
-    
+    var locais = {};
+    var cidades = {};
+    $http.get(SERVER + "sugestoes/locais").then(
+        function (response) {
+            if(!response.data['erro']){
+                for(var v in response.data.locais){
+                    locais[response.data.locais[v]] = null;
+                }
+               //console.log(locais);
+            }
+        }
+    );
+    $http.get(SERVER + "sugestoes/cidades").then(
+        function (response) {
+            if(!response.data['erro']){
+               //console.log(response.data);
+                for(var v in response.data.cidades){
+                    cidades[response.data.cidades[v]] = null;
+                }
+               //console.log(cidades);
+            }
+        }
+    );
+    $scope.load = function () {
+        $('#origem').autocomplete({
+            data: locais,
+            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            onAutocomplete: function(val) {
+                $scope.origem = val;
+            },
+            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+        });
+        $('#local').autocomplete({
+            data: cidades,
+            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            onAutocomplete: function(val) {
+                $scope.local = val;
+            },
+            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+        });
+    };
 });
 
 app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies) {
@@ -247,6 +300,9 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
                 //console.log($scope.dados);
                 for(var i in $scope.dados){
                     $scope.dados[i]['_id'] = "i" + $scope.dados[i]['_id'];
+                    var dd = $scope.dados[i]['data'].split("-");
+                    $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
+                    $scope.dados[i]['total'] = "R$ " + $scope.dados[i]['total'];
                 }
             }
         },
@@ -276,16 +332,18 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
         //console.log("Edita o " + id.substring(1, id.length));
         $location.path("/verDespesas/" + id.substring(1, id.length));
     };
-    $(document).ready(function(){
-        $('.modal').modal();
-    });
+    $scope.modal = function () {
+        $(document).ready(function(){
+            $('.modal').modal();
+        });
+    };
 });
 
 app.controller('cadDespesas', function ($scope, $route, $location, $http, $cookies) {
     if($cookies.get("PHPSESSID") === undefined){
         $location.path('/login');
     }
-    $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: 0, valort: ""}];
+    $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: "", valort: ""}];
     $scope.total = 0.0;
     $scope.newItem = function () {
         $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
@@ -312,7 +370,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
             itens: $scope.itens,
             total: $scope.total
         };
-        //console.log(form);
+        console.log(form);
         $http.post(SERVER + "despesas", form).then(
             function (result) {
                 //console.log(result);
@@ -328,6 +386,47 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
                 alert("Não foi possível realizar a operação");
             }
         )
+    };
+    var locais = {};
+    var cidades = {};
+    $http.get(SERVER + "sugestoes/locais").then(
+        function (response) {
+            if(!response.data['erro']){
+                for(var v in response.data.locais){
+                    locais[response.data.locais[v]] = null;
+                }
+               //console.log(locais);
+            }
+        }
+    );
+    $http.get(SERVER + "sugestoes/cidades").then(
+        function (response) {
+            if(!response.data['erro']){
+               //console.log(response.data);
+                for(var v in response.data.cidades){
+                    cidades[response.data.cidades[v]] = null;
+                }
+               //console.log(cidades);
+            }
+        }
+    );
+    $scope.load = function () {
+        $('#origem').autocomplete({
+            data: locais,
+            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            onAutocomplete: function(val) {
+                $scope.origem = val;
+            },
+            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+        });
+        $('#local').autocomplete({
+            data: cidades,
+            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            onAutocomplete: function(val) {
+                $scope.local = val;
+            },
+            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+        });
     };
 });
 
@@ -355,9 +454,10 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
     });
 });
 
-app.controller('usuarios', function ($http, $scope, $route, $location, $cookies, $templateCache) {
+app.controller('usuarios', function ($http, $scope, $route, $location, $cookies) {
     if($cookies.get("PHPSESSID") === undefined){
-        // $location.path('/login');
+        if($location.path() !== "/usuario")
+            $location.path('/login');
     }
     else{
         $location.path('/home');

@@ -13,13 +13,13 @@
     </div>
     <div class="row">
         <div class="col s12">
-            <div class="input-field col m6 s12">
+            <div class="col m6 s12">
                 <label for="origem">Local: </label>
-                <input type="text" id="origem" class="validate" ng-required="true" ng-model="origem">
+                <input type="text" id="origem" class="validate autocomplete" ng-required="true" ng-model="origem">
             </div>
-            <div class="input-field col m6 s12">
+            <div class="col m6 s12">
                 <label for="local">Cidade: </label>
-                <input type="text" id="local" class="validate" ng-required="true" ng-model="local">
+                <input type="text" id="local" class="validate autocomplete" ng-required="true" ng-model="local">
             </div>
             <div class="col m4 s12">
                 <label >Repetição:</label>
@@ -79,5 +79,6 @@
         </div>
     </div>
 </div>
+{{load()}}
 </body>
 </html>

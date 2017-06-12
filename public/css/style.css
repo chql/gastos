@@ -52,3 +52,7 @@ a {
 .slider img{
     opacity: 0.4;
 }
+
+.autocomplete-content{
+    position: absolute;
+}

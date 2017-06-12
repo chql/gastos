@@ -40,7 +40,7 @@ $app->get('/sugestoes/cidades', function($request, $response) {
 
     return $response->withJson([
         'erro' => false,
-        'locais' => $cidades
+        'cidades' => $cidades
     ]);
 })->add( \Core\AutenticacaoMiddleware::getInstance() );
 
