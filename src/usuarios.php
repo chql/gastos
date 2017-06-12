@@ -60,7 +60,7 @@ $app->post('/usuarios/login', function($request, $response) {
         ]);
     }
 
-    if(hash('sha256', $dados['senha']) !== $user->senha) {
+    if(hash('sha256', $dados['senha']) !== $user['senha']) {
         $form->getFilter()->addMessages('login','Login inválido');
         return $response->withJson([
             'erro' => true,
@@ -68,11 +68,11 @@ $app->post('/usuarios/login', function($request, $response) {
         ]);
     }
 
-    $_SESSION['login'] = $user->login;
+    $_SESSION['login'] = $user['login'];
 
     return $response->withJson([
         'erro' => false,
-        'login' => $user->login
+        'login' => $user['login']
     ]);
 });
 
