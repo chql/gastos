@@ -44,31 +44,17 @@
 | PUT    | [receita](#r-receita) | [erros](#r-erros) | Altera uma receita. |
 | DELETE |             |          | Deleta uma receita. |
 
-### `/locais`
+### `/sugestoes/locais`
 
 | Tipo  | Solicitação | Resposta | Descrição |
 | ----- | ----------- | -------- | --------- |
-| GET   |             | [locais](#r-local):array | Obtém locais do usuário. |
-| POST  | [local](#r-local) | [erros](#r-erros) | Cadastra um novo local para o usuário. |
+| GET   |             | locais:string:array | Obtém sugestões de locais do usuário. |
 
-### `/locais/{id}`
-
-| Tipo   | Solicitação | Resposta | Descrição |
-| ------ | ----------- | -------- | --------- |
-| DELETE |             |          | Deleta um local do usuário. |
-
-### `/cidades`
+### `/sugestoes/cidades`
 
 | Tipo  | Solicitação | Resposta | Descrição |
 | ----- | ----------- | -------- | --------- |
-| GET   |             | [cidades](#r-cidade):array | Obtém cidades do usuário. |
-| POST  | [cidade](#r-cidade) | [erros](#r-erros) | Cadastra uma nova cidade do usuário. |
-
-### `/cidades/{id}`
-
-| Tipo   | Solicitação | Resposta | Descrição |
-| ------ | ----------- | -------- | --------- |
-| DELETE |             |          | Deleta uma cidade do usuário. |
+| GET   |             | cidades:string:array | Obtém sugestões de cidades do usuário. |
 
 ## Estruturas
 
@@ -111,21 +97,5 @@
         "origem": <string>,
         "repeticao": "<variavel|dia|semana|quinzena|mes|ano>",
         "data": "<YYYY-MM-DD>"
-    }
-
-<a name="r-local">
-
-### Local
-
-    {
-        "nome": <string>
-    }
-
-<a name="r-cidade">
-
-### Cidade
-
-    {
-        "nome": <string>
     }
 

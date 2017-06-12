@@ -19,7 +19,6 @@ $app->add(function($request, $response, $next) {
 include_once '../../src/usuarios.php';
 include_once '../../src/despesas.php';
 include_once '../../src/receitas.php';
-include_once '../../src/locais.php';
-include_once '../../src/cidades.php';
+include_once '../../src/sugestoes.php';
 
 $app->run();
