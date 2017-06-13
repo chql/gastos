@@ -9,6 +9,9 @@
         <div class="row">
             <h3 class="center">Despesas</h3>
         </div>
+        <div class="col s4 m2 right">
+            <a class="btn-floating waves-effect waves-light red" ng-click="newItem()"><i class="material-icons">add</i></a>
+        </div>
         <h5 class="center" ng-if="dados.length === 0">Não há despesas cadastradas!</h5>
         <table class="highlight responsible-table" ng-if="dados.length > 0">
             <thead>

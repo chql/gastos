@@ -56,3 +56,7 @@ a {
 .autocomplete-content{
     position: absolute;
 }
+
+.home-button{
+    margin-top: 26px;
+}

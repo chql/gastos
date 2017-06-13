@@ -45,7 +45,7 @@ app.config(function ($routeProvider) {
 });
 
 app.controller('home', function ($scope, $route, $location, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $scope.verDespesas = function () {
@@ -63,7 +63,7 @@ app.controller('home', function ($scope, $route, $location, $cookies) {
 });
 
 app.controller('upReceita', function ($scope, $location, $http, $routeParams, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $http.get(SERVER + "receitas/" + $routeParams.id).then(
@@ -92,7 +92,7 @@ app.controller('upReceita', function ($scope, $location, $http, $routeParams, $c
             function (response) {
                 if(!response.data['erro']){
                     alert("Receita atualizada com sucesso!");
-                    $location.path("/home");
+                    $location.path("/verReceitas");
                 }
                 else
                     alert("Não foi possível atualizar a receita");
@@ -102,7 +102,7 @@ app.controller('upReceita', function ($scope, $location, $http, $routeParams, $c
 });
 
 app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $http.get(SERVER + "receitas").then(
@@ -110,6 +110,7 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
             //console.log(response);
             if(!response.data['erro']){
                 $scope.dados = response.data['receitas'];
+                $scope.dados.reverse();
                 for(var i in $scope.dados) {
                     var dd = $scope.dados[i]['data'].split("-");
                     $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
@@ -142,11 +143,14 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
     $scope.edit = function (id) {
         //console.log("Edita o " + id);
         $location.path("/verReceitas/" + id);
+    };
+    $scope.newItem = function () {
+        $location.path("/novaReceita");
     }
 });
 
 app.controller('cadReceitas', function ($scope, $route, $location, $http, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $scope.cadReceita = function () {
@@ -165,7 +169,7 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http, $cooki
                 }
                 else{
                     alert("Receita armazenada com sucesso");
-                    $location.path("/home");
+                    $location.path("/verReceitas");
                 }
             },
             function (result) {
@@ -177,10 +181,9 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http, $cooki
 });
 
 app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $http, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
-    $scope.itens = [];
     $http.get(SERVER + "despesas/" + $routeParams.id).then(
         function (result) {
             //console.log(result);
@@ -192,9 +195,7 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
                 d.setMinutes(d.getTimezoneOffset());
                 $scope.data = d;
                 $scope.repeticao = result.data['despesa'].repeticao;
-                for(var v in result.data['despesa'].itens){
-                    $scope.itens.push(result.data['despesa'].itens[v]);
-                }
+                $scope.itens = result.data['despesa'].itens;
                //console.log($scope.itens);
             }
         },
@@ -203,11 +204,11 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
         }
     );
     $scope.newItem = function () {
-        $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
+        $scope.itens.unshift({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
     };
     $scope.remItem = function () {
         if($scope.itens.length > 1) {
-            $scope.itens.splice($scope.itens.length - 1);
+            $scope.itens.splice(0);
             $scope.ftotal();
         }
         else
@@ -237,7 +238,7 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
                 }
                 else{
                     alert("Despesa atualizada com sucesso");
-                    $location.path("/home");
+                    $location.path("/verDespesas");
                 }
             },
             function () {
@@ -289,13 +290,14 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
 });
 
 app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $http.get(SERVER + "despesas").then(
         function (response) {
             if(!response.data['erro']) {
                 $scope.dados = response.data['despesas'];
+                $scope.dados.reverse();
                 $scope.itens = $scope.dados['itens'];
                 //console.log($scope.dados);
                 for(var i in $scope.dados){
@@ -337,20 +339,24 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
             $('.modal').modal();
         });
     };
+    $scope.newItem = function () {
+        $location.path("/novaDespesa");
+    };
 });
 
 app.controller('cadDespesas', function ($scope, $route, $location, $http, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
     $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: "", valort: ""}];
     $scope.total = 0.0;
+    $scope.data = new Date();
     $scope.newItem = function () {
-        $scope.itens.push({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
+        $scope.itens.unshift({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
     };
     $scope.remItem = function () {
         if($scope.itens.length > 1)
-            $scope.itens.splice($scope.itens.length - 1);
+            $scope.itens.splice(0);
         else
             alert("Deve haver pelo menos um item");
     };
@@ -379,7 +385,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
                 }
                 else{
                     alert("Despesa armazenada com sucesso");
-                    $location.path("/home");
+                    $location.path("/verDespesas");
                 }
             },
             function () {
@@ -403,6 +409,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
         function (response) {
             if(!response.data['erro']){
                //console.log(response.data);
+                $scope.local = response.data.cidades.length === 0 ? "" : response.data.cidades[response.data.cidades.length-1];
                 for(var v in response.data.cidades){
                     cidades[response.data.cidades[v]] = null;
                 }
@@ -431,7 +438,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
 });
 
 app.controller('main', function ($scope, $route, $location, $cookies) {
-    $scope.logado = $cookies.get("PHPSESSID") !== undefined;
+    $scope.logado = $cookies.get("CUGALogin") !== undefined;
     $scope.home = function (){
         if($scope.logado)
             $location.path("/home");
@@ -445,22 +452,45 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
         $location.path("/usuario");
     };
     $scope.logout = function () {
-        $cookies.remove("PHPSESSID");
+        $cookies.remove("CUGALogin");
         $scope.logado = false;
         $scope.home();
     };
+    $scope.verDespesas = function () {
+        $location.path("/verDespesas")
+    };
+    $scope.verReceitas = function () {
+        $location.path("/verReceitas")
+    };
+    $scope.novaDespesa = function () {
+        $location.path("/novaDespesa")
+    };
+    $scope.novaReceita = function () {
+        $location.path("/novaReceita")
+    };
     $(document).ready(function(){
         $('.slider').slider();
+        $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, // Does not change width of dropdown to that of the activator
+                hover: true, // Activate on hover
+                gutter: 0, // Spacing from edge
+                belowOrigin: false, // Displays dropdown below the button
+                alignment: 'left', // Displays dropdown with edge aligned to the left of button
+                stopPropagation: false // Stops event propagation
+            }
+        );
     });
 });
 
 app.controller('usuarios', function ($http, $scope, $route, $location, $cookies) {
-    if($cookies.get("PHPSESSID") === undefined){
+    if($cookies.get("CUGALogin") === undefined){
         if($location.path() !== "/usuario")
             $location.path('/login');
     }
     else{
-        $location.path('/home');
+        $location.path('/verDespesas');
     }
     $scope.cadUser = function () {
         var user = {
@@ -498,11 +528,12 @@ app.controller('usuarios', function ($http, $scope, $route, $location, $cookies)
                     alert("Não foi possível fazer o login");
                 }
                 else{
+                    $cookies.put("CUGALogin", "");
                     location.reload();
                 }
             },
             function () {
-                alert("Não foi possível fazer o login");
+                alert("Não foi possível fazer o login!");
             }
         )
     }

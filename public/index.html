@@ -22,13 +22,21 @@
     <header>
         <nav>
             <div class="nav-wrapper red darken-4">
-                <a ng-click="home()" class="brand-logo center">CUGA</a>
+                <a ng-click="home()" class="brand-logo left" style="padding-left: 15px">CUGA</a>
                 <ul id="nav-mobile" class="right">
                     <li><a ng-if="!logado" ng-click="login()"><i class="material-icons center">perm_identity</i></a></li>
-                    <li><a ng-if="logado" ng-click="logout()"><i class="material-icons center">power_settings_new</i></a></li>
+                    <li><a ng-if="logado" class='dropdown-button btn teal darken-4' data-activates='dropdown'><i class="material-icons left">reorder</i>Opções</a></li>
                 </ul>
             </div>
         </nav>
+        <ul id="dropdown" class="dropdown-content">
+            <li><a ng-click="novaReceita()"><i class="material-icons center">playlist_add</i>Nova Receita</a></li>
+            <li><a ng-click="novaDespesa()"><i class="material-icons center">shopping_cart</i>Nova Despesa</a></li>
+            <li><a ng-click="verReceitas()"><i class="material-icons center">visibility</i>Ver Receitas</a></li>
+            <li><a ng-click="verDespesas()"><i class="material-icons center">visibility</i>Ver Despesas</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="logout()"><i class="material-icons center">power_settings_new</i>Sair</a></li>
+        </ul>
     </header>
 
     <main class="red lighten-5">
