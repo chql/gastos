@@ -153,6 +153,7 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http, $cooki
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
+    $scope.data = new Date();
     $scope.cadReceita = function () {
         var dados = {
             origem: $scope.origem,
@@ -208,7 +209,7 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
     };
     $scope.remItem = function () {
         if($scope.itens.length > 1) {
-            $scope.itens.splice(0);
+            $scope.itens.splice(0,1);
             $scope.ftotal();
         }
         else
@@ -356,7 +357,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
     };
     $scope.remItem = function () {
         if($scope.itens.length > 1)
-            $scope.itens.splice(0);
+            $scope.itens.splice(0,1);
         else
             alert("Deve haver pelo menos um item");
     };
