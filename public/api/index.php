@@ -30,5 +30,6 @@ include_once '../../src/usuarios.php';
 include_once '../../src/despesas.php';
 include_once '../../src/receitas.php';
 include_once '../../src/sugestoes.php';
+include_once '../../src/buscas.php';
 
 $app->run();
