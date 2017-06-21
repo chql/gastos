@@ -44,6 +44,57 @@ app.config(function ($routeProvider) {
         });
 });
 
+
+app.controller('footer', function ($scope, $http, $cookies) {
+    var entradas, saidas;
+    var getDespesas = function () {
+        $http.get(SERVER + "buscas/despesas", {
+            params: {
+                inicio: data + "01",
+                final: data + "31"
+            }
+        }).then(function (response) {
+            if (!response.data['erro']) {
+                var desp = response.data['despesas'];
+                saidas = 0.0;
+                desp.forEach(function (d) {
+                    saidas += parseFloat(d.total);
+                });
+                getReceitas();
+            }
+        });
+    };
+    var getReceitas = function () {
+        $http.get(SERVER + "buscas/receitas", {
+            params: {
+                inicio: data + "01",
+                final: data + "31"
+            }
+        }).then(function (response) {
+            if(!response.data['erro']){
+                var rece = response.data['receitas'];
+                entradas = 0.0;
+                rece.forEach(function (d) {
+                    entradas += parseFloat(d.valor);
+                });
+                setBal(entradas-saidas);
+            }
+        });
+    };
+    var setBal = function (value) {
+        $scope.balanco = "Saldo: R$ " + value.toFixed(2);
+    };
+    if($cookies.get("CUGALogin") !== undefined){
+        var data = new Date().toISOString().substring(0,8);
+        $scope.referencia = "Referência: " + data.split("-")[1] + "/" + data.split("-")[0];
+        getDespesas();
+    }
+    $scope.$on("updateFooter", function (event) {
+        console.log(event);
+        getDespesas();
+    });
+});
+
 app.controller('home', function ($scope, $route, $location, $cookies) {
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
@@ -101,7 +152,7 @@ app.controller('upReceita', function ($scope, $location, $http, $routeParams, $c
     };
 });
 
-app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies) {
+app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies, $rootScope) {
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
@@ -132,6 +183,7 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
             //console.log(response);
         }
     );
+    $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
         //console.log("Remove o " + id);
         var ans = confirm("Tem certeza que deseja excluir este registro?");
@@ -300,7 +352,7 @@ app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $
     };
 });
 
-app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies) {
+app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies, $rootScope) {
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
@@ -333,6 +385,7 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
             //console.log(response);
         }
     );
+    $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
         //console.log("Remove o " + id);
         var ans = confirm("Tem certeza que deseja excluir este registro?");
@@ -397,7 +450,6 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
             itens: $scope.itens,
             total: $scope.total
         };
-        console.log(form);
         $http.post(SERVER + "despesas", form).then(
             function (result) {
                 //console.log(result);
@@ -475,7 +527,7 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
     $scope.logout = function () {
         $cookies.remove("CUGALogin");
         $scope.logado = false;
-        $scope.home();
+        location.reload();
     };
     $scope.verDespesas = function () {
         $location.path("/verDespesas")

@@ -18,8 +18,8 @@
     <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body ng-controller="main">
-    <header>
+<body>
+    <header ng-controller="main">
         <nav>
             <div class="nav-wrapper red darken-4">
                 <a ng-click="home()" class="brand-logo left" style="padding-left: 15px">CUGA</a>
@@ -39,15 +39,23 @@
         </ul>
     </header>
 
-    <main class="red lighten-5">
+    <main class="red lighten-5" ng-controller="main">
         <div ng-view></div>
     </main>
 
-    <footer class="page-footer red darken-4">
+    <footer class="page-footer red darken-4" ng-controller="footer">
         <div class="container">
             <div class="row">
-                <div class="col l12 s12">
-                    <h5 class="white-text">Projeto GP - IFCE Campus Crato</h5>
+                <div class="col l6 s12">
+                    <h6 class="white-text">{{balanco}}</h6>
+                    <h6 class="white-text">{{referencia}}</h6>
+                </div>
+                <div class="col l6 s12">
+                    <h5 class="white-text right">Projeto GP - IFCE Campus Crato
+                        <a href="https://github.com/chql/gastos" target="_blank" style="color: white">
+                            <i class="material-icons center small">code</i>
+                        </a>
+                    </h5>
                 </div>
             </div>
         </div>
