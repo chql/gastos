@@ -105,17 +105,27 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
-    $http.get(SERVER + "receitas").then(
+    $http.get(SERVER + "buscas/receitas", {
+        params: {
+            inicio: new Date().toISOString().substring(0,8)+"01",
+            final: new Date().toISOString().substring(0,8)+"31"
+        }
+    }).then(
         function (response) {
             //console.log(response);
             if(!response.data['erro']){
+                var v = 0.0;
                 $scope.dados = response.data['receitas'];
                 $scope.dados.reverse();
                 for(var i in $scope.dados) {
                     var dd = $scope.dados[i]['data'].split("-");
                     $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
+                    v += parseFloat($scope.dados[i]['valor']);
                     $scope.dados[i]['valor'] = "R$ " + $scope.dados[i]['valor'];
                 }
+                $scope.soma = "R$ " + v.toFixed(2);
+                var d = new Date().toISOString().substring(0,8).split("-");
+                $scope.referencia = d[1] + "/" + d[0];
             }
         },
         function (response) {
@@ -294,19 +304,29 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
-    $http.get(SERVER + "despesas").then(
+    $http.get(SERVER + "buscas/despesas", {
+        params: {
+            inicio: new Date().toISOString().substring(0,8)+"01",
+            final: new Date().toISOString().substring(0,8)+"31"
+        }
+    }).then(
         function (response) {
             if(!response.data['erro']) {
+                var v = 0.0;
+                var d = new Date().toISOString().substring(0,8).split("-");
+                $scope.referencia = d[1] + "/" + d[0];
                 $scope.dados = response.data['despesas'];
                 $scope.dados.reverse();
                 $scope.itens = $scope.dados['itens'];
                 //console.log($scope.dados);
                 for(var i in $scope.dados){
+                    v += parseFloat($scope.dados[i]['total']);
                     $scope.dados[i]['_id'] = "i" + $scope.dados[i]['_id'];
                     var dd = $scope.dados[i]['data'].split("-");
                     $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
                     $scope.dados[i]['total'] = "R$ " + $scope.dados[i]['total'];
                 }
+                $scope.soma = "R$ " + v.toFixed(2);
             }
         },
         function (response) {

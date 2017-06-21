@@ -7,7 +7,9 @@
 <body ng-controller="verReceitas">
     <div class="container">
         <div class="row">
-            <h3 class="center">Receitas</h3>
+            <div class="col s12 l6"><h3 class="center">Receitas</h3></div>
+            <div class="col s6 l3"><h5 class="center">Referência:<br/>{{referencia}}</h5></div>
+            <div class="col s6 l3"><h5 class="center">Total:<br/>{{soma}}</h5></div>
         </div>
         <div class="col s4 m2 right">
             <a class="btn-floating waves-effect waves-light red" ng-click="newItem()"><i class="material-icons">add</i></a>

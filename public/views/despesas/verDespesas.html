@@ -7,7 +7,10 @@
 <body ng-controller="verDespesas">
     <div class="container">
         <div class="row">
-            <h3 class="center">Despesas</h3>
+            <div class="col s12 l6"><h3 class="center">Despesas</h3></div>
+            <div class="col s6 l3"><h5 class="center">Referência:<br/>{{referencia}}</h5></div>
+            <div class="col s6 l3"><h5 class="center">Total:<br/>{{soma}}</h5></div>
+
         </div>
         <div class="col s4 m2 right">
             <a class="btn-floating waves-effect waves-light red" ng-click="newItem()"><i class="material-icons">add</i></a>
@@ -33,7 +36,7 @@
                 <td>{{r.total}}</td>
                 <td>{{r.data}}</td>
                 <td>{{r.repeticao}}</td>
-                <td><i data-target="{{r['_id']}}" class="modal-trigger material-icons mao">list</i></button></td>
+                <td><i data-target="{{r['_id']}}" class="modal-trigger material-icons mao">list</i></td>
                 <td><i class="material-icons mao" ng-click="edit(r['_id'])">edit</i></td>
                 <td><i class="material-icons mao" ng-click="remove(r['_id'])">delete</i></td>
             </tr>
@@ -61,6 +64,9 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="modal-footer">
+                    <p align="center"><b>Total: {{r.total}}</b></p>
                 </div>
             </div>
         </div>
