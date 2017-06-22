@@ -8,23 +8,15 @@ app.config(function ($routeProvider) {
         })
         .when("/usuario",{
             templateUrl: "../views/cadastroUsuario.html",
-            controller: 'usuarios'
+            controller: 'cadUser'
         })
         .when("/login", {
             templateUrl: "../views/login.html",
-            controller: 'usuarios'
+            controller: 'login'
         })
         .when("/home", {
             templateUrl: "../views/home.html",
             controller: 'home'
-        })
-        .when("/novaReceita", {
-            templateUrl: "../views/receitas/novaReceita.html",
-            controller: 'cadReceitas'
-        })
-        .when("/novaDespesa", {
-            templateUrl: "../views/despesas/novaDespesa.html",
-            controller: 'cadDespesas'
         })
         .when("/verReceitas", {
             templateUrl: "../views/receitas/verReceitas.html",
@@ -33,17 +25,26 @@ app.config(function ($routeProvider) {
         .when("/verDespesas", {
             templateUrl: "../views/despesas/verDespesas.html",
             controller: 'verDespesas'
-        })
-        .when("/verReceitas/:id/", {
-            templateUrl: "../views/receitas/verReceita.html",
-            controller: 'upReceita'
-        })
-        .when("/verDespesas/:id/", {
-            templateUrl: "../views/despesas/verDespesa.html",
-            controller: 'upDespesa'
         });
 });
 
+app.controller('home', function ($scope, $route, $location, $cookies) {
+    if($cookies.get("CUGALogin") === undefined){
+        $location.path('/login');
+    }
+    $scope.verDespesas = function () {
+        $location.path("/verDespesas")
+    };
+    $scope.verReceitas = function () {
+        $location.path("/verReceitas")
+    };
+    $scope.novaDespesa = function () {
+        $location.path("/novaDespesa")
+    };
+    $scope.novaReceita = function () {
+        $location.path("/novaReceita")
+    };
+});
 
 app.controller('footer', function ($scope, $http, $cookies) {
     var entradas, saidas;
@@ -89,67 +90,9 @@ app.controller('footer', function ($scope, $http, $cookies) {
         $scope.referencia = "Referência: " + data.split("-")[1] + "/" + data.split("-")[0];
         getDespesas();
     }
-    $scope.$on("updateFooter", function (event) {
-        console.log(event);
+    $scope.$on("updateFooter", function () {
         getDespesas();
     });
-});
-
-app.controller('home', function ($scope, $route, $location, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        $location.path('/login');
-    }
-    $scope.verDespesas = function () {
-        $location.path("/verDespesas")
-    };
-    $scope.verReceitas = function () {
-        $location.path("/verReceitas")
-    };
-    $scope.novaDespesa = function () {
-        $location.path("/novaDespesa")
-    };
-    $scope.novaReceita = function () {
-        $location.path("/novaReceita")
-    };
-});
-
-app.controller('upReceita', function ($scope, $location, $http, $routeParams, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        $location.path('/login');
-    }
-    $http.get(SERVER + "receitas/" + $routeParams.id).then(
-        function (response) {
-            //console.log(response);
-            if(!response.data['erro']){
-                $scope.origem = response.data['receita'].origem;
-                $scope.valor = response.data['receita'].valor;
-                var d = new Date(response.data['receita'].data);
-                d.setMinutes(d.getTimezoneOffset());
-                $scope.data = d;
-                $scope.repeticao = response.data['receita'].repeticao;
-            }
-        }
-    );
-
-    $scope.upReceita = function () {
-        var form = {
-            origem: $scope.origem,
-            repeticao: $scope.repeticao,
-            valor: $scope.valor,
-            data: $scope.data.toISOString().substring(0,10)
-        };
-        //console.log(form);
-        $http.put(SERVER + "receitas/" + $routeParams.id, form).then(
-            function (response) {
-                if(!response.data['erro']){
-                    alert("Receita atualizada com sucesso!");
-                    $location.path("/verReceitas");
-                }
-                else
-                    alert("Não foi possível atualizar a receita");
-            }
-        );
-    };
 });
 
 app.controller('verReceitas', function ($scope, $route, $http, $location, $cookies, $rootScope) {
@@ -163,35 +106,31 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
         }
     }).then(
         function (response) {
-            //console.log(response);
             if(!response.data['erro']){
                 var v = 0.0;
                 $scope.dados = response.data['receitas'];
                 $scope.dados.reverse();
-                for(var i in $scope.dados) {
-                    var dd = $scope.dados[i]['data'].split("-");
-                    $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
-                    v += parseFloat($scope.dados[i]['valor']);
-                    $scope.dados[i]['valor'] = "R$ " + $scope.dados[i]['valor'];
-                }
+                $scope.dados.forEach(function (dados) {
+                    v += parseFloat(dados['valor']);
+                    dados['data'] = dados['data'].split("-").reverse().join("/");
+                    dados['valor'] = "R$ " + dados['valor'];
+                });
                 $scope.soma = "R$ " + v.toFixed(2);
-                var d = new Date().toISOString().substring(0,8).split("-");
-                $scope.referencia = d[1] + "/" + d[0];
+                $scope.referencia = new Date().toISOString().substring(0,7).split("-").reverse().join("/");
+
             }
-        },
-        function (response) {
-            //console.log(response);
         }
     );
     $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
-        //console.log("Remove o " + id);
         var ans = confirm("Tem certeza que deseja excluir este registro?");
         if(ans){
             $http.delete(SERVER + "receitas/" + id).then(
                 function (response) {
-                    if(!response.data['erro'])
+                    if(!response.data['erro']) {
                         alert("Registro excluido com sucesso!");
+                        $route.reload();
+                    }
                     else
                         alert("Não foi possivel excluir o registro");
                 },
@@ -199,23 +138,27 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
                     alert("Não foi possivel excluir o registro");
                 }
             );
-            $route.reload();
         }
     };
     $scope.edit = function (id) {
-        //console.log("Edita o " + id);
-        $location.path("/verReceitas/" + id);
+        $scope.dados.forEach(function (dado) {
+            if(dado['_id'] === id){
+                $rootScope.$broadcast("updateReceita", dado);
+            }
+        });
     };
-    $scope.newItem = function () {
-        $location.path("/novaReceita");
-    }
+    $scope.clean = function () {
+        $rootScope.$broadcast("cleanRecForm");
+    };
+    $scope.modal = function () {
+        $(document).ready(function(){
+            $('.modal').modal();
+        });
+    };
 });
 
-app.controller('cadReceitas', function ($scope, $route, $location, $http, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        $location.path('/login');
-    }
-    $scope.data = new Date();
+app.controller('cadReceitas', function ($scope, $route, $location, $http) {
+    $scope.rec_id = false;
     $scope.cadReceita = function () {
         var dados = {
             origem: $scope.origem,
@@ -223,133 +166,34 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http, $cooki
             valor: $scope.valor,
             data: $scope.data.toISOString().substring(0,10)
         };
-        //console.log(dados);
-        $http.post(SERVER + "receitas", dados).then(
-            function (result) {
-                //console.log(result);
-                if (result.data['erro']) {
-                    alert("Não foi possível realizar a operacão");
-                }
-                else{
-                    alert("Receita armazenada com sucesso");
-                    $location.path("/verReceitas");
-                }
-            },
-            function (result) {
-                //console.log(result);
-                alert("Não foi possível realizar a operação");
+        var catchResult = function (response){
+            if (!response.data['erro']) {
+                alert("Salvo com sucesso!");
+                $('#cadReceita').modal('close');
+                $route.reload();
             }
-        )
-    };
-});
-
-app.controller('upDespesa', function ($scope, $route, $routeParams, $location, $http, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        $location.path('/login');
-    }
-    $http.get(SERVER + "despesas/" + $routeParams.id).then(
-        function (result) {
-            //console.log(result);
-            if(!result.data['erro']) {
-                $scope.origem = result.data['despesa'].origem;
-                $scope.local = result.data['despesa'].local;
-                $scope.total = result.data['despesa'].total;
-                var d = new Date(result.data['despesa'].data);
-                d.setMinutes(d.getTimezoneOffset());
-                $scope.data = d;
-                $scope.repeticao = result.data['despesa'].repeticao;
-                $scope.itens = result.data['despesa'].itens;
-               //console.log($scope.itens);
-            }
-        },
-        function (result) {
-            //console.log(result);
-        }
-    );
-    $scope.newItem = function () {
-        $scope.itens.unshift({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
-    };
-    $scope.remItem = function () {
-        if($scope.itens.length > 1) {
-            $scope.itens.splice(0,1);
-            $scope.ftotal();
-        }
-        else
-            alert("Deve haver pelo menos um item");
-    };
-    $scope.ftotal = function () {
-        var c = 0;
-        for(var i in $scope.itens){
-            c += parseFloat($scope.itens[i]['valort']);
-        }
-        $scope.total = c.toFixed(2);
-    };
-    $scope.upDespesa = function () {
-        var form = {
-            origem: $scope.origem,
-            local: $scope.local,
-            repeticao: $scope.repeticao,
-            data: $scope.data.toISOString().substring(0,10),
-            itens: $scope.itens,
-            total: $scope.total
+            else
+                alert("Não foi possível atualizar a receita");
         };
-        //console.log(form);
-        $http.put(SERVER + "despesas/" + $routeParams.id, form).then(
-            function (result) {
-                if (result.data['erro']) {
-                    alert("Não foi possível realizar a operacão");
-                }
-                else{
-                    alert("Despesa atualizada com sucesso");
-                    $location.path("/verDespesas");
-                }
-            },
-            function () {
-                alert("Não foi possível realizar a operação");
-            }
-        )
+        if($scope.rec_id !== false)
+            $http.put(SERVER + "receitas/" + $scope.rec_id, dados).then(catchResult);
+        else
+            $http.post(SERVER + "receitas", dados).then(catchResult);
+
     };
-    var locais = {};
-    var cidades = {};
-    $http.get(SERVER + "sugestoes/locais").then(
-        function (response) {
-            if(!response.data['erro']){
-                for(var v in response.data.locais){
-                    locais[response.data.locais[v]] = null;
-                }
-               //console.log(locais);
-            }
-        }
-    );
-    $http.get(SERVER + "sugestoes/cidades").then(
-        function (response) {
-            if(!response.data['erro']){
-               //console.log(response.data);
-                for(var v in response.data.cidades){
-                    cidades[response.data.cidades[v]] = null;
-                }
-               //console.log(cidades);
-            }
-        }
-    );
-    $scope.load = function () {
-        $('#origem').autocomplete({
-            data: locais,
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-            onAutocomplete: function(val) {
-                $scope.origem = val;
-            },
-            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
-        });
-        $('#local').autocomplete({
-            data: cidades,
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-            onAutocomplete: function(val) {
-                $scope.local = val;
-            },
-            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
-        });
-    };
+    $scope.$on("updateReceita", function (evento, arg) {
+        $scope.origem = arg['origem'];
+        $scope.repeticao = arg['repeticao'];
+        $scope.valor = parseFloat(arg['valor'].split(" ")[1]);
+        var d = new Date(arg['data'].split("/").reverse().join("-"));
+        d.setMinutes(d.getTimezoneOffset());
+        $scope.data = d;
+        $scope.rec_id = arg['_id'];
+    });
+    $scope.$on("cleanRecForm", function () {
+        $scope.origem = $scope.repeticao = $scope.valor = undefined;
+        $scope.data = new Date();
+    })
 });
 
 app.controller('verDespesas', function ($scope, $route, $location, $http, $cookies, $rootScope) {
@@ -365,32 +209,24 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
         function (response) {
             if(!response.data['erro']) {
                 var v = 0.0;
-                var d = new Date().toISOString().substring(0,8).split("-");
-                $scope.referencia = d[1] + "/" + d[0];
+                $scope.referencia = new Date().toISOString().substring(0,7).split("-").reverse().join("/");
                 $scope.dados = response.data['despesas'];
                 $scope.dados.reverse();
                 $scope.itens = $scope.dados['itens'];
-                //console.log($scope.dados);
-                for(var i in $scope.dados){
-                    v += parseFloat($scope.dados[i]['total']);
-                    $scope.dados[i]['_id'] = "i" + $scope.dados[i]['_id'];
-                    var dd = $scope.dados[i]['data'].split("-");
-                    $scope.dados[i]['data'] = dd[2] + "/" + dd[1] + "/" + dd[0];
-                    $scope.dados[i]['total'] = "R$ " + $scope.dados[i]['total'];
-                }
+                $scope.dados.forEach(function (dado) {
+                    v += parseFloat(dado['total']);
+                    dado['data'] = dado['data'].split("-").reverse().join("/");
+                    dado['total'] = "R$ " + dado['total'];
+                });
                 $scope.soma = "R$ " + v.toFixed(2);
             }
-        },
-        function (response) {
-            //console.log(response);
         }
     );
     $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
-        //console.log("Remove o " + id);
         var ans = confirm("Tem certeza que deseja excluir este registro?");
         if(ans){
-            $http.delete(SERVER + "despesas/" + id.substring(1, id.length)).then(
+            $http.delete(SERVER + "despesas/" + id).then(
                 function (response) {
                     if(!response.data['erro'])
                         alert("Registro excluido com sucesso!");
@@ -405,42 +241,80 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
         }
     };
     $scope.edit = function (id) {
-        //console.log("Edita o " + id.substring(1, id.length));
-        $location.path("/verDespesas/" + id.substring(1, id.length));
+        $scope.dados.forEach(function (dado) {
+            if(dado['_id'] === id){
+                $rootScope.$broadcast("updateDespesa", dado);
+            }
+        });
     };
     $scope.modal = function () {
         $(document).ready(function(){
             $('.modal').modal();
         });
     };
-    $scope.newItem = function () {
-        $location.path("/novaDespesa");
-    };
+    $scope.clean = function () {
+        $rootScope.$broadcast("cleanDesForm");
+    }
 });
 
-app.controller('cadDespesas', function ($scope, $route, $location, $http, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        $location.path('/login');
-    }
-    $scope.itens = [{id: "1", descricao: "", quantidade: 1, valor: "", valort: ""}];
+app.controller('cadDespesas', function ($scope, $route, $location, $http) {
+    var locais = {};
+    var cidades = {};
+    var ids = gen();
+    $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""}];
     $scope.total = 0.0;
     $scope.data = new Date();
-    $scope.newItem = function () {
-        $scope.itens.unshift({id: ($scope.itens.length+1).toString(), descricao: "", quantidade: "", valor: "", valort: ""});
+    $scope.desp_id = false;
+    $http.get(SERVER + "sugestoes/locais").then(
+        function (response) {
+            if(!response.data['erro']){
+                response.data['locais'].forEach(function (local) {
+                    locais[local] = null;
+                });
+            }
+        }
+    );
+    $http.get(SERVER + "sugestoes/cidades").then(
+        function (response) {
+            if(!response.data['erro']){
+                $scope.last_local = $scope.local = response.data['cidades'].length === 0 ? "" :
+                    response.data['cidades'][response.data['cidades'].length-1];
+                response.data['cidades'].forEach(function (cidade) {
+                    cidades[cidade] = null;
+                });
+            }
+        }
+    );
+    var result = function (result) {
+        if (result.data['erro']) {
+            alert("Não foi possível realizar a operacão");
+        }
+        else{
+            alert("Despesa armazenada com sucesso");
+            $('#cadDespesa').modal('close');
+            $route.reload();
+        }
     };
-    $scope.remItem = function () {
-        if($scope.itens.length > 1)
-            $scope.itens.splice(0,1);
+
+    $scope.newItem = function () {
+        $scope.itens.push({id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""});
+    };
+    $scope.remItem = function (id) {
+        if($scope.itens.length > 1) {
+            for (var i = 0; i < $scope.itens.length; i++) {
+                if ($scope.itens[i]['id'] === id)
+                    $scope.itens.splice(i, 1);
+            }
+        }
         else
             alert("Deve haver pelo menos um item");
     };
-    $scope.ftotal = function () {
-        var c = 0;
-        $scope.itens.forEach(function (v) {
-            c += parseFloat(v.valort);
-        });
-        $scope.total = c.toFixed(2);
-    };
+    $scope.$on("cleanDesForm", function () {
+        $scope.origem = $scope.repeticao = $scope.total = undefined;
+        $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""}];
+        $scope.data = new Date();
+        $scope.local = $scope.last_local;
+    });
     $scope.cadDespesa = function () {
         var form = {
             origem: $scope.origem,
@@ -448,66 +322,49 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http, $cooki
             repeticao: $scope.repeticao,
             data: $scope.data.toISOString().substring(0,10),
             itens: $scope.itens,
-            total: $scope.total
+            total: $scope.total.split(" ")[1]
         };
-        $http.post(SERVER + "despesas", form).then(
-            function (result) {
-                //console.log(result);
-                if (result.data['erro']) {
-                    alert("Não foi possível realizar a operacão");
-                }
-                else{
-                    alert("Despesa armazenada com sucesso");
-                    $location.path("/verDespesas");
-                }
-            },
-            function () {
-                alert("Não foi possível realizar a operação");
-            }
-        )
+        if($scope.desp_id === false)
+            $http.post(SERVER + "despesas", form).then(result);
+        else
+            $http.put(SERVER + "despesas/" + $scope.desp_id, form).then(result);
     };
-    var locais = {};
-    var cidades = {};
-    $http.get(SERVER + "sugestoes/locais").then(
-        function (response) {
-            if(!response.data['erro']){
-                for(var v in response.data.locais){
-                    locais[response.data.locais[v]] = null;
-                }
-               //console.log(locais);
-            }
-        }
-    );
-    $http.get(SERVER + "sugestoes/cidades").then(
-        function (response) {
-            if(!response.data['erro']){
-               //console.log(response.data);
-                $scope.local = response.data.cidades.length === 0 ? "" : response.data.cidades[response.data.cidades.length-1];
-                for(var v in response.data.cidades){
-                    cidades[response.data.cidades[v]] = null;
-                }
-               //console.log(cidades);
-            }
-        }
-    );
+    $scope.sum = function () {
+        var t = 0;
+        $scope.itens.forEach(function (item) {
+            t += parseFloat(item['valort'].split(" ")[1]);
+        });
+        $scope.total = "R$ " + t.toFixed(2);
+    };
     $scope.load = function () {
         $('#origem').autocomplete({
             data: locais,
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            limit: 5,
             onAutocomplete: function(val) {
                 $scope.origem = val;
             },
-            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+            minLength: 0
         });
         $('#local').autocomplete({
             data: cidades,
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+            limit: 5,
             onAutocomplete: function(val) {
                 $scope.local = val;
             },
-            minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+            minLength: 0
         });
     };
+    $scope.$on("updateDespesa", function (event, arg){
+        var d = new Date(arg['data'].split("/").reverse().join("-"));
+        d.setMinutes(d.getTimezoneOffset());
+        $scope.data = d;
+        $scope.origem = arg['origem'];
+        $scope.local = arg['local'];
+        $scope.repeticao = arg['repeticao'];
+        $scope.desp_id = arg['_id'];
+        $scope.itens = arg['itens'];
+        $scope.total = parseFloat(arg['total'].split(" ")[1]);
+    });
 });
 
 app.controller('main', function ($scope, $route, $location, $cookies) {
@@ -535,12 +392,6 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
     $scope.verReceitas = function () {
         $location.path("/verReceitas")
     };
-    $scope.novaDespesa = function () {
-        $location.path("/novaDespesa")
-    };
-    $scope.novaReceita = function () {
-        $location.path("/novaReceita")
-    };
     $(document).ready(function(){
         $('.slider').slider();
         $('.dropdown-button').dropdown({
@@ -557,28 +408,28 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
     });
 });
 
-app.controller('usuarios', function ($http, $scope, $route, $location, $cookies) {
-    if($cookies.get("CUGALogin") === undefined){
-        if($location.path() !== "/usuario")
+app.controller('cadUser', function ($http, $scope, $route, $location, $cookies) {
+    if ($cookies.get("CUGALogin") === undefined) {
+        if ($location.path() !== "/usuario")
             $location.path('/login');
     }
-    else{
+    else {
         $location.path('/verDespesas');
     }
     $scope.cadUser = function () {
         var user = {
             "nome": $scope.nome,
-            "login": $scope.username,
+            "login": $scope.user,
             "senha": $scope.senha
         };
         $http.post(SERVER + "usuarios", user).then(
             function (result) {
                 //console.log(result);
-                if(result.data['erro']){
+                if (result.data['erro']) {
                     alert("Não foi possível cadastrar o usuário");
                     $route.reload();
                 }
-                else{
+                else {
                     alert("Usuário cadastrado com sucesso");
                     $location.path('/login');
                 }
@@ -590,9 +441,19 @@ app.controller('usuarios', function ($http, $scope, $route, $location, $cookies)
         )
 
     };
+});
+
+app.controller('login', function ($http, $scope, $route, $location, $cookies) {
+    if($cookies.get("CUGALogin") === undefined){
+        if($location.path() !== "/usuario")
+            $location.path('/login');
+    }
+    else{
+        $location.path('/verDespesas');
+    }
     $scope.login = function () {
-        var user = {
-            "login": $scope.username,
+        user = {
+            "login": $scope.user,
             "senha": $scope.senha
         };
         $http.post(SERVER + "usuarios/login", user).then(
@@ -619,4 +480,10 @@ var decimal = function () {
         v.value = "";
     else
         v.value = x.toFixed(2);
+};
+
+var gen = function* () {
+    var index = 0;
+    while(true)
+        yield index++;
 };

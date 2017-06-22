@@ -1,10 +1,12 @@
-<body ng-controller="verDespesas">
-    <div class="container">
+<body>
+    <div class="container" ng-controller="verDespesas">
         <div class="row">
             <div class="col s12 l12"><h3 class="center">Despesas</h3></div>
         </div>
         <div class="col s4 m2 right">
-            <a class="btn-floating waves-effect waves-light red" ng-click="newItem()"><i class="material-icons">add</i></a>
+            <a class="btn-floating waves-effect waves-light red">
+                <i ng-click="clean()" class="material-icons modal-trigger" data-target="cadDespesa">add</i>
+            </a>
         </div>
         <h5 class="center" ng-if="dados.length === 0">Não há despesas cadastradas!</h5>
         <table class="highlight responsible-table" ng-if="dados.length > 0">
@@ -28,7 +30,7 @@
                 <td>{{r.data}}</td>
                 <td>{{r.repeticao}}</td>
                 <td><i data-target="{{r['_id']}}" class="modal-trigger material-icons mao">list</i></td>
-                <td><i class="material-icons mao" ng-click="edit(r['_id'])">edit</i></td>
+                <td><i class="material-icons mao modal-trigger" data-target="cadDespesa" ng-click="edit(r['_id'])">edit</i></td>
                 <td><i class="material-icons mao" ng-click="remove(r['_id'])">delete</i></td>
             </tr>
             </tbody>
@@ -37,34 +39,120 @@
             <div class="col s6 l6"><h5 class="center">Referência: {{referencia}}</h5></div>
             <div class="col s6 l6"><h5 class="center">Total: {{soma}}</h5></div>
         </div>
-        <div id="modals">
-            <div id="{{r['_id']}}" class="modal" ng-repeat="r in dados">
-                <div class="modal-content">
-                    <h4>Itens:</h4>
-                    <table class="highlight responsible-table">
-                        <thead>
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Quantidade</th>
-                                <th>V. Unitário</th>
-                                <th>V. Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="i in r.itens">
-                                <td>{{i.descricao}}</td>
-                                <td>{{i.quantidade}}</td>
-                                <td>{{i.valor}}</td>
-                                <td>{{i.valort}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+    </div>
+    <div id="modals">
+        <div id="{{r['_id']}}" class="modal" ng-repeat="r in dados" ng-controller="verDespesas">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col s12 m4 l4">
+                        <h4>Itens:</h4>
+                    </div>
+                    <div class="col s6 m4 l4">
+                        <p>Origem: {{r.origem}}</p>
+                        <p>Total: {{r.total}}</p>
+                    </div>
+                    <div class="col s6 m4 l4">
+                        <p>Local: {{r.local}}</p>
+                        <p>Data: {{r.data}}</p>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <p align="center"><b>Total: {{r.total}}</b></p>
+                <table class="highlight responsible-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>V. Unitário</th>
+                            <th>V. Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="i in r.itens">
+                            <td>{{i.descricao}}</td>
+                            <td>{{i.quantidade}}</td>
+                            <td>{{i.valor}}</td>
+                            <td>{{i.valort}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal" id="cadDespesa" ng-form="despesa" ng-controller="cadDespesas">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col s12 l12">
+                        <h4 class="center">Despesa</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="col m6 s12">
+                            <label for="origem">Local: </label>
+                            <input type="text" id="origem" class="validate autocomplete" ng-required="true" ng-model="origem">
+                        </div>
+                        <div class="col m6 s12">
+                            <label for="local">Cidade: </label>
+                            <input type="text" id="local" class="validate autocomplete" ng-required="true" ng-model="local">
+                        </div>
+                        <div class="col m4 s12">
+                            <label >Repetição:</label>
+                            <select class="browser-default validate" ng-model="repeticao" ng-required="true">
+                                <option value="" disabled selected>Fixa ou Variável?</option>
+                                <option value="variavel">Variavel</option>
+                                <optgroup label="Fixa:">
+                                    <option value="dia">Diária</option>
+                                    <option value="semana">Semanal</option>
+                                    <option value="quinzena">Quinzenal</option>
+                                    <option value="mes">Mensal</option>
+                                    <option value="ano">Anual</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="col m4 s12">
+                            <label for="data">Data: </label>
+                            <input type="date" id="data" ng-model="data" ng-required="true">
+                        </div>
+                        <div class="col m4 s12">
+                            <label for="total">Total: </label>
+                            <input type="text" id="total" ng-model="total" ng-required="true" readonly disabled>
+                        </div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>V. Unitário</th>
+                            <th>V. Total</th>
+                            <th><i class="material-icons center mao" ng-click="newItem()">library_add</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="i in itens">
+                            <td><input type="text" ng-model="i.descricao" ng-required="true"></td>
+                            <td><input type="number" ng-model="i.quantidade" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2);" ng-required="true"></td>
+                            <td><input type="number" ng-model="i.valor" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2); sum()" ng-required="true"></td>
+                            <td><input type="text" ng-model="i.valort" ng-change="sum()" ng-required="true"></td>
+                            <td><i class="material-icons center mao" ng-click="remItem(i.id)">delete</i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        <div>
+                            <button class="teal darken-4 btn waves-effect waves-light" type="submit" name="action" ng-click="cadDespesa()"
+                                    ng-disabled="!despesa.$valid">Salvar
+                                <i class="material-icons right">done</i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-    {{modal()}}
+    <div ng-controller="verDespesas">{{modal()}}</div>
+    <div ng-controller="cadDespesas">{{load()}}</div>
 </body>
