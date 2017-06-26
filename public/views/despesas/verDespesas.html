@@ -113,7 +113,7 @@
                         </div>
                         <div class="col m4 s12">
                             <label for="total">Total: </label>
-                            <input type="text" id="total" ng-model="total" ng-required="true" readonly disabled>
+                            <input type="text" id="total" ng-model="total" readonly disabled>
                         </div>
                     </div>
                 </div>
@@ -128,12 +128,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="i in itens">
+                        <tr ng-repeat="i in itens track by $index">
                             <td><input type="text" ng-model="i.descricao" ng-required="true"></td>
                             <td><input type="number" ng-model="i.quantidade" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2);" ng-required="true"></td>
                             <td><input type="number" ng-model="i.valor" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2); sum()" ng-required="true"></td>
                             <td><input type="text" ng-model="i.valort" ng-change="sum()" ng-required="true"></td>
-                            <td><i class="material-icons center mao" ng-click="remItem(i.id)">delete</i></td>
+                            <td><i class="material-icons center mao" ng-click="remItem($index)">delete</i></td>
                         </tr>
                     </tbody>
                 </table>

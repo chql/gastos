@@ -300,12 +300,9 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         $scope.itens.push({id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""});
     };
     $scope.remItem = function (id) {
-        if($scope.itens.length > 1) {
-            for (var i = 0; i < $scope.itens.length; i++) {
-                if ($scope.itens[i]['id'] === id)
-                    $scope.itens.splice(i, 1);
-            }
-        }
+	console.log(id);
+        if($scope.itens.length > 1)
+            $scope.itens.splice(id, 1);
         else
             alert("Deve haver pelo menos um item");
     };
