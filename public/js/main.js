@@ -314,8 +314,8 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     });
     $scope.cadDespesa = function () {
         var form = {
-            origem: $scope.origem,
-            local: $scope.local,
+            origem: $('#origem').val(),
+            local: $('#local').val(),
             repeticao: $scope.repeticao,
             data: $scope.data.toISOString().substring(0,10),
             itens: $scope.itens,
@@ -334,31 +334,25 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         });
         $scope.total = "R$ " + t.toFixed(2);
     };
-    $scope.setOrigem = function (origem) {
-        if(origem !== undefined)
-            $scope.origem = origem;
-    };
     $scope.load = function () {
-        setTimeout(function () {
-            $('#origem').autocomplete({
-                data: locais,
-                limit: 5,
-                onAutocomplete: function (val) {
-                    if(val !== undefined)
-                        $scope.origem = clone(val);
-                },
-                minLength: 0
-            });
-            $('#local').autocomplete({
-                data: cidades,
-                limit: 5,
-                onAutocomplete: function (val) {
-                    if (val !== undefined)
-                        $scope.local = clone(val);
-                },
-                minLength: 0
-            });
-        }, 1000);
+        $('#origem').autocomplete({
+            data: locais,
+            limit: 5,
+            onAutocomplete: function (val) {
+                if(val !== undefined)
+                    $scope.origem = clone(val);
+            },
+            minLength: 0
+        });
+        $('#local').autocomplete({
+            data: cidades,
+            limit: 5,
+            onAutocomplete: function (val) {
+                if (val !== undefined)
+                    $scope.local = clone(val);
+            },
+            minLength: 0
+        });
     };
     $scope.$on("updateDespesa", function (event, arg){
         var d = new Date(arg['data'].split("/").reverse().join("-"));
@@ -369,7 +363,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         $scope.repeticao = arg['repeticao'];
         $scope.desp_id = arg['_id'];
         $scope.itens = arg['itens'];
-        $scope.total = parseFloat(arg['total'].split(" ")[1]);
+        $scope.total = arg['total'];
     });
 });
 

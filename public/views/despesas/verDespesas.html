@@ -87,11 +87,11 @@
                     <div class="col s12">
                         <div class="col m6 s12">
                             <label for="origem">Local: </label>
-                            <input type="text" id="origem" class="autocomplete" ng-required="true" ng-model="origem" ng-change="alert('ngchange')">
+                            <input type="text" id="origem" class="autocomplete" ng-required="origem === ''" ng-model="origem" ng-change="alert('ngchange')">
                         </div>
                         <div class="col m6 s12">
                             <label for="local">Cidade: </label>
-                            <input type="text" id="local" class="autocomplete" ng-required="true" ng-model="local">
+                            <input type="text" id="local" class="autocomplete" ng-required="local === ''" ng-model="local">
                         </div>
                         <div class="col m4 s12">
                             <label >Repetição:</label>
