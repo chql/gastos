@@ -321,6 +321,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
             itens: $scope.itens,
             total: $scope.total.split(" ")[1]
         };
+        console.log(form);
         if($scope.desp_id === false)
             $http.post(SERVER + "despesas", form).then(result);
         else
@@ -333,23 +334,31 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         });
         $scope.total = "R$ " + t.toFixed(2);
     };
+    $scope.setOrigem = function (origem) {
+        if(origem !== undefined)
+            $scope.origem = origem;
+    };
     $scope.load = function () {
-        $('#origem').autocomplete({
-            data: locais,
-            limit: 5,
-            onAutocomplete: function(val) {
-                $scope.origem = val;
-            },
-            minLength: 0
-        });
-        $('#local').autocomplete({
-            data: cidades,
-            limit: 5,
-            onAutocomplete: function(val) {
-                $scope.local = val;
-            },
-            minLength: 0
-        });
+        setTimeout(function () {
+            $('#origem').autocomplete({
+                data: locais,
+                limit: 5,
+                onAutocomplete: function (val) {
+                    if(val !== undefined)
+                        $scope.origem = clone(val);
+                },
+                minLength: 0
+            });
+            $('#local').autocomplete({
+                data: cidades,
+                limit: 5,
+                onAutocomplete: function (val) {
+                    if (val !== undefined)
+                        $scope.local = clone(val);
+                },
+                minLength: 0
+            });
+        }, 1000);
     };
     $scope.$on("updateDespesa", function (event, arg){
         var d = new Date(arg['data'].split("/").reverse().join("-"));
@@ -375,9 +384,7 @@ app.controller('main', function ($scope, $route, $location, $cookies) {
     $scope.login = function (){
         $location.path("/login");
     };
-    $scope.cadastro = function (){
-        $location.path("/usuario");
-    };
+
     $scope.logout = function () {
         $cookies.remove("CUGALogin");
         $scope.logado = false;
@@ -467,7 +474,10 @@ app.controller('login', function ($http, $scope, $route, $location, $cookies) {
                 alert("Não foi possível fazer o login!");
             }
         )
-    }
+    };
+    $scope.cadastro = function (){
+        $location.path("/usuario");
+    };
 });
 
 var decimal = function () {
@@ -482,5 +492,16 @@ var decimal = function () {
 var gen = function* () {
     var index = 0;
     while(true)
-        yield index++;
+        { //noinspection JSAnnotator
+            yield index++;
+        }
 };
+
+function clone(obj) {
+    if (null === obj || "object" !== typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
