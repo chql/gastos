@@ -294,17 +294,16 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
             $('#cadDespesa').modal('close');
             $route.reload();
         }
+        $('.modal-overlay').remove();
     };
 
     $scope.newItem = function () {
+        if($scope.itens === undefined)
+            $scope.itens = [];
         $scope.itens.push({id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: NaN, valort: ""});
     };
     $scope.remItem = function (id) {
-	console.log(id);
-        if($scope.itens.length > 1)
-            $scope.itens.splice(id, 1);
-        else
-            alert("Deve haver pelo menos um item");
+        $scope.itens.splice(id, 1);
     };
     $scope.$on("cleanDesForm", function () {
         $scope.origem = $scope.repeticao = $scope.total = undefined;
@@ -313,6 +312,8 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         $scope.local = $scope.last_local;
     });
     $scope.cadDespesa = function () {
+        if(typeof($scope.data) === "string")
+            $scope.data = new Date($scope.data.split("/").reverse().join("-"));
         var form = {
             origem: $('#origem').val(),
             local: $('#local').val(),
@@ -321,7 +322,6 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
             itens: $scope.itens,
             total: $scope.total.split(" ")[1]
         };
-        console.log(form);
         if($scope.desp_id === false)
             $http.post(SERVER + "despesas", form).then(result);
         else
@@ -357,7 +357,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     $scope.$on("updateDespesa", function (event, arg){
         var d = new Date(arg['data'].split("/").reverse().join("-"));
         d.setMinutes(d.getTimezoneOffset());
-        $scope.data = d;
+        $scope.data = d.toISOString().substring(0,10).split("-").reverse().join("/");
         $scope.origem = arg['origem'];
         $scope.local = arg['local'];
         $scope.repeticao = arg['repeticao'];
@@ -422,7 +422,6 @@ app.controller('cadUser', function ($http, $scope, $route, $location, $cookies) 
         };
         $http.post(SERVER + "usuarios", user).then(
             function (result) {
-                //console.log(result);
                 if (result.data['erro']) {
                     alert("Não foi possível cadastrar o usuário");
                     $route.reload();
