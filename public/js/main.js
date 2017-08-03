@@ -261,7 +261,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     var locais = {};
     var cidades = {};
     var ids = gen();
-    $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""}];
+    $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: NaN, valort: ""}];
     $scope.total = 0.0;
     $scope.data = new Date();
     $scope.desp_id = false;
@@ -297,7 +297,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     };
 
     $scope.newItem = function () {
-        $scope.itens.push({id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""});
+        $scope.itens.push({id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: NaN, valort: ""});
     };
     $scope.remItem = function (id) {
 	console.log(id);
@@ -308,7 +308,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     };
     $scope.$on("cleanDesForm", function () {
         $scope.origem = $scope.repeticao = $scope.total = undefined;
-        $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: 0, valort: ""}];
+        $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: NaN, valort: ""}];
         $scope.data = new Date();
         $scope.local = $scope.last_local;
     });
