@@ -71,7 +71,7 @@
                             <td><input type="text" ng-model="i.descricao" ng-required="true"></td>
                             <td><input type="number" ng-model="i.quantidade" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2);" ng-required="true"></td>
                             <td><input type="number" ng-model="i.valor" ng-change="i.valort = 'R$ ' + (i.quantidade * i.valor).toFixed(2); sum()" ng-required="true"></td>
-                            <td><input type="text" ng-model="i.valort" ng-change="sum()" ng-required="true"></td>
+                            <td><input type="text" ng-model="i.valort" ng-change="sum()" ng-required="true" readonly></td>
                             <td><i class="material-icons center mao" ng-click="remItem($index)">delete</i></td>
                         </tr>
                     </tbody>
@@ -128,7 +128,7 @@
                         </div>
                         <div class="col m4 s12">
                             <label for="total">Total: </label>
-                            <input type="text" id="total" ng-model="total" ng-required="true" onchange="t = $('#total'); t.val('R$ ' + parseFloat(t.val()).toFixed(2));">
+                            <input readonly type="text" id="total" ng-model="total" ng-required="false"  value="R$ 0" onchange="t = $('#total'); t.val('R$ ' + parseFloat(t.val()).toFixed(2));">
                         </div>
                     </div>
                 </div>

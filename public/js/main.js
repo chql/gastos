@@ -314,6 +314,8 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
     $scope.cadDespesa = function () {
         if(typeof($scope.data) === "string")
             $scope.data = new Date($scope.data.split("/").reverse().join("-"));
+	if($scope.total === undefined)
+		$scope.total = "R$ 0";
         var form = {
             origem: $('#origem').val(),
             local: $('#local').val(),
