@@ -34,6 +34,7 @@ class ValidaDespesa extends Form
             }
         );
 
+        /*
         $filter->setRule(
             'repeticao',
             'Tipo inválido para repetição.',
@@ -42,6 +43,7 @@ class ValidaDespesa extends Form
                 return in_array($tipo, $tipos);
             }
         );
+        */
 
         $filter->setRule(
             'data',
