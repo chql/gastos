@@ -162,7 +162,6 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
     $scope.cadReceita = function () {
         var dados = {
             origem: $scope.origem,
-            repeticao: $scope.repeticao,
             valor: $scope.valor,
             data: $scope.data.toISOString().substring(0,10)
         };
@@ -183,7 +182,6 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
     };
     $scope.$on("updateReceita", function (evento, arg) {
         $scope.origem = arg['origem'];
-        $scope.repeticao = arg['repeticao'];
         $scope.valor = parseFloat(arg['valor'].split(" ")[1]);
         var d = new Date(arg['data'].split("/").reverse().join("-"));
         d.setMinutes(d.getTimezoneOffset());
@@ -191,7 +189,7 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
         $scope.rec_id = arg['_id'];
     });
     $scope.$on("cleanRecForm", function () {
-        $scope.origem = $scope.repeticao = $scope.valor = undefined;
+        $scope.origem = $scope.valor = undefined;
         $scope.data = new Date();
     })
 });
@@ -200,28 +198,36 @@ app.controller('verDespesas', function ($scope, $route, $location, $http, $cooki
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
-    $http.get(SERVER + "buscas/despesas", {
-        params: {
-            inicio: new Date().toISOString().substring(0,8)+"01",
-            final: new Date().toISOString().substring(0,8)+"31"
-        }
-    }).then(
-        function (response) {
-            if(!response.data['erro']) {
-                var v = 0.0;
-                $scope.referencia = new Date().toISOString().substring(0,7).split("-").reverse().join("/");
-                $scope.dados = response.data['despesas'];
-                $scope.dados.reverse();
-                $scope.itens = $scope.dados['itens'];
-                $scope.dados.forEach(function (dado) {
-                    v += parseFloat(dado['total']);
-                    dado['data'] = dado['data'].split("-").reverse().join("/");
-                    dado['total'] = "R$ " + dado['total'];
-                });
-                $scope.soma = "R$ " + v.toFixed(2);
+    $scope.getDespesas = function (start, end) {
+        $http.get(SERVER + "buscas/despesas", {
+            params: {
+                inicio: start,
+                final: end
             }
-        }
-    );
+        }).then(
+            function (response) {
+                if(!response.data['erro']) {
+                    var v = 0.0;
+                    $scope.referencia = start.substring(0,7).split("-").reverse().join("/");
+                    $scope.dados = response.data['despesas'];
+                    $scope.dados.reverse();
+                    $scope.itens = $scope.dados['itens'];
+                    $scope.dados.forEach(function (dado) {
+                        v += parseFloat(dado['total']);
+                        dado['data'] = dado['data'].split("-").reverse().join("/");
+                        dado['total'] = "R$ " + dado['total'];
+                    });
+                    $scope.soma = "R$ " + v.toFixed(2);
+                }
+            }
+        );
+    };
+    $scope.moveHistory = function (dir) {
+        $scope.actualDate.setMonth($scope.actualDate.getMonth()+dir);
+        $scope.getDespesas($scope.actualDate.toISOString().substring(0,8) + "01", $scope.actualDate.toISOString().substring(0,8) + "31");
+    };
+    $scope.actualDate = new Date();
+    $scope.getDespesas($scope.actualDate.toISOString().substring(0,8) + "01", $scope.actualDate.toISOString().substring(0,8) + "31");
     $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
         var ans = confirm("Tem certeza que deseja excluir este registro?");
@@ -306,7 +312,7 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         $scope.itens.splice(id, 1);
     };
     $scope.$on("cleanDesForm", function () {
-        $scope.origem = $scope.repeticao = $scope.total = undefined;
+        $scope.origem = $scope.total = undefined;
         $scope.itens = [{id: ids.next().value.toString(), descricao: "", quantidade: 1, valor: NaN, valort: ""}];
         $scope.data = new Date();
         $scope.local = $scope.last_local;
@@ -319,7 +325,6 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         var form = {
             origem: $('#origem').val(),
             local: $('#local').val(),
-            repeticao: $scope.repeticao,
             data: $scope.data.toISOString().substring(0,10),
             itens: $scope.itens,
             total: $scope.total.split(" ")[1]
@@ -362,7 +367,6 @@ app.controller('cadDespesas', function ($scope, $route, $location, $http) {
         $scope.data = d.toISOString().substring(0,10).split("-").reverse().join("/");
         $scope.origem = arg['origem'];
         $scope.local = arg['local'];
-        $scope.repeticao = arg['repeticao'];
         $scope.desp_id = arg['_id'];
         $scope.itens = arg['itens'];
         $scope.total = arg['total'];

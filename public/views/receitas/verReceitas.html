@@ -15,7 +15,6 @@
                     <th>Origem</th>
                     <th>Valor</th>
                     <th>Data</th>
-                    <th>Repetição</th>
                     <th>Editar</th>
                     <th>Remover</th>
                 </tr>
@@ -25,7 +24,6 @@
                     <td>{{r.origem}}</td>
                     <td>{{r.valor}}</td>
                     <td>{{r.data}}</td>
-                    <td>{{r.repeticao}}</td>
                     <td><i class="material-icons mao modal-trigger" data-target="cadReceita" ng-click="edit(r._id)">edit</i></td>
                     <td><i class="material-icons mao" ng-click="remove(r._id)">delete</i></td>
                 </tr>
@@ -45,27 +43,13 @@
             </div>
             <div class="row">
                 <div class="col s12">
-                    <div class="col m6 s12">
+                    <div class="col m12 s12">
                         <label for="origem">Origem da receita: </label>
                         <input type="text" id="origem" class="validate" ng-model="origem" ng-required="true">
                     </div>
                     <div class="col m6 s12">
                         <label for="valor">Valor(R$):</label>
                         <input id="valor" onchange="decimal()" type="text" class="validate" ng-model="valor" ng-required="true">
-                    </div>
-                    <div class="col m6 s12">
-                        <label >Repetição:</label>
-                        <select id="repeticao" class="browser-default validate" ng-model="repeticao" ng-required="true">
-                            <option value="" disabled selected>Fixa ou Variável?</option>
-                            <option value="variavel">Variavel</option>
-                            <optgroup label="Fixa:">
-                                <option value="dia">Diária</option>
-                                <option value="semana">Semanal</option>
-                                <option value="quinzena">Quinzenal</option>
-                                <option value="mes">Mensal</option>
-                                <option value="ano">Anual</option>
-                            </optgroup>
-                        </select>
                     </div>
                     <div class="col m6 s12">
                         <label for="data">Data: </label>

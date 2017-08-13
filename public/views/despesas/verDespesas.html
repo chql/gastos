@@ -16,7 +16,6 @@
                 <th>Local</th>
                 <th>Valor</th>
                 <th>Data</th>
-                <th>Repetição</th>
                 <th>Itens</th>
                 <th>Editar</th>
                 <th>Remover</th>
@@ -28,7 +27,6 @@
                 <td>{{r.local}}</td>
                 <td>{{r.total}}</td>
                 <td>{{r.data}}</td>
-                <td>{{r.repeticao}}</td>
                 <td><i data-target="editDespesa" class="modal-trigger material-icons mao" ng-click="edit(r['_id'])">list</i></td>
                 <td><i class="material-icons mao modal-trigger" data-target="cadDespesa" ng-click="edit(r['_id'])">edit</i></td>
                 <td><i class="material-icons mao" ng-click="remove(r['_id'])">delete</i></td>
@@ -36,7 +34,13 @@
             </tbody>
         </table>
         <div class="row">
-            <div class="col s6 l6"><h5 class="center">Referência: {{referencia}}</h5></div>
+            <div class="col s6 l6">
+                <h5 class="center">
+                    <i class="material-icons mao" ng-click="moveHistory(-1)">arrow_back</i>
+                    Referência: {{referencia}}
+                    <i class="material-icons mao" ng-click="moveHistory(1)">arrow_forward</i>
+                </h5>
+            </div>
             <div class="col s6 l6"><h5 class="center">Total: {{soma}}</h5></div>
         </div>
     </div>
@@ -108,25 +112,11 @@
                             <label for="local">Cidade: </label>
                             <input type="text" id="local" class="autocomplete" ng-required="local === ''" ng-model="local">
                         </div>
-                        <div class="col m4 s12">
-                            <label >Repetição:</label>
-                            <select class="browser-default validate" ng-model="repeticao" ng-required="true">
-                                <option value="" disabled selected>Fixa ou Variável?</option>
-                                <option value="variavel">Variavel</option>
-                                <optgroup label="Fixa:">
-                                    <option value="dia">Diária</option>
-                                    <option value="semana">Semanal</option>
-                                    <option value="quinzena">Quinzenal</option>
-                                    <option value="mes">Mensal</option>
-                                    <option value="ano">Anual</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col m4 s12">
+                        <div class="col m6 s12">
                             <label for="data">Data: </label>
                             <input type="date" id="data" ng-model="data" ng-required="true">
                         </div>
-                        <div class="col m4 s12">
+                        <div class="col m6 s12">
                             <label for="total">Total: </label>
                             <input readonly type="text" id="total" ng-model="total" ng-required="false"  value="R$ 0" onchange="t = $('#total'); t.val('R$ ' + parseFloat(t.val()).toFixed(2));">
                         </div>
