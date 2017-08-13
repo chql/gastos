@@ -99,28 +99,36 @@ app.controller('verReceitas', function ($scope, $route, $http, $location, $cooki
     if($cookies.get("CUGALogin") === undefined){
         $location.path('/login');
     }
-    $http.get(SERVER + "buscas/receitas", {
-        params: {
-            inicio: new Date().toISOString().substring(0,8)+"01",
-            final: new Date().toISOString().substring(0,8)+"31"
-        }
-    }).then(
-        function (response) {
-            if(!response.data['erro']){
-                var v = 0.0;
-                $scope.dados = response.data['receitas'];
-                $scope.dados.reverse();
-                $scope.dados.forEach(function (dados) {
-                    v += parseFloat(dados['valor']);
-                    dados['data'] = dados['data'].split("-").reverse().join("/");
-                    dados['valor'] = "R$ " + dados['valor'];
-                });
-                $scope.soma = "R$ " + v.toFixed(2);
-                $scope.referencia = new Date().toISOString().substring(0,7).split("-").reverse().join("/");
-
+    $scope.getReceitas = function(start, end) {
+        $http.get(SERVER + "buscas/receitas", {
+            params: {
+                inicio: start,
+                final: end
             }
-        }
-    );
+        }).then(
+            function (response) {
+                if (!response.data['erro']) {
+                    var v = 0.0;
+                    $scope.dados = response.data['receitas'];
+                    $scope.dados.reverse();
+                    $scope.dados.forEach(function (dados) {
+                        v += parseFloat(dados['valor']);
+                        dados['data'] = dados['data'].split("-").reverse().join("/");
+                        dados['valor'] = "R$ " + dados['valor'];
+                    });
+                    $scope.soma = "R$ " + v.toFixed(2);
+                    $scope.referencia = start.substring(0, 7).split("-").reverse().join("/");
+
+                }
+            }
+        );
+    };
+    $scope.moveHistory = function (dir) {
+        $scope.actualDate.setMonth($scope.actualDate.getMonth()+dir);
+        $scope.getReceitas($scope.actualDate.toISOString().substring(0,8) + "01", $scope.actualDate.toISOString().substring(0,8) + "31");
+    };
+    $scope.actualDate = new Date();
+    $scope.getReceitas($scope.actualDate.toISOString().substring(0,8) + "01", $scope.actualDate.toISOString().substring(0,8) + "31");
     $rootScope.$broadcast("updateFooter");
     $scope.remove = function (id) {
         var ans = confirm("Tem certeza que deseja excluir este registro?");
