@@ -12,7 +12,7 @@ class ValidaDespesa extends Form
 
         $this->setField('origem');
         $this->setField('local');
-        $this->setField('repeticao');
+        // $this->setField('repeticao');
         $this->setField('data');
         // $this->setField('valor');
 
