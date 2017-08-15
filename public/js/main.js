@@ -180,7 +180,7 @@ app.controller('cadReceitas', function ($scope, $route, $location, $http) {
                 $route.reload();
             }
             else
-                alert("Não foi possível atualizar a receita");
+                alert("Não foi possível salvar a receita");
         };
         if($scope.rec_id !== false)
             $http.put(SERVER + "receitas/" + $scope.rec_id, dados).then(catchResult);
