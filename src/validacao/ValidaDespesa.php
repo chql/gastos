@@ -49,7 +49,7 @@ class ValidaDespesa extends Form
             'data',
             'Formato inválido para data.',
             function($data) {
-                return strlen($data) == 10 and 
+                return strlen($data) == 10 and
                     (date_create_from_format("Y-m-d", $data) !== FALSE);
             }
         );
